@@ -1,0 +1,36 @@
+RobotGaiaAnt
+
+Build website using Gaia Flash Framework + Robotlegs + Signals.
+
+
+- USAGE:
+
+1. Copy all stuff in this folder to your project's base folder.
+
+2. Open build.xml, set Ant project name, and Flex sdk path.
+
+3. Open gaia.properties, modify project settings.
+
+4. Run Ant!
+
+
+- SUPPORT:
+
+Kevin Cao ( http://kevincao.com )
+
+
+- CHANGELOG:
+
+v0.2.0:	Fix bug in "get-branch" macro.
+		Add "refresh-site-xml" function.
+		Refactor folder structure.
+v0.1.0:	First version
+
+
+- LINK:
+
+Gaia Flash Framework	:	http://www.gaiaflashframework.com
+Robotlegs				:	http://www.robotlegs.org
+Signals					:	http://github.com/robertpenner/as3-signals
+Signals extensions		:	http://github.com/robertpenner/signals-extensions-CommandSignal
+Gaia Ant (Sobre Mi)		:	http://blog.desarrolloflash.com/2010/02/actualizacion-del-fichero-site-xml-gaia-framework-con-ant

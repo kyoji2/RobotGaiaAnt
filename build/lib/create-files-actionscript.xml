@@ -1,0 +1,27 @@
+<project name="create-files-actionscript">
+	<macrodef name="create-class">
+		<attribute name="dir"/>
+		<attribute name="namespace"/>
+		<attribute name="name"/>
+		<attribute name="properties" default=""/>
+		<attribute name="imports" default=""/>
+		<sequential>
+			<echo message="create-page: @{namespace}.@{name}"/>
+			<copy file="${templates}/Main.tpl" tofile="${src}/@{dir}/@{name}.as"
+				overwrite="false">
+				<filterchain>
+					<replacetokens>
+						<token key="namespace"  value="@{namespace}"/>
+						<token key="appname"    value="@{name}"/>
+						<token key="properties" value="@{properties}"/>
+						<token key="imports"    value="@{imports}"/>
+						<token key="width"      value="${width}"/>
+						<token key="height"     value="${height}"/>
+						<token key="framerate"  value="${framerate}"/>
+						<token key="bgcolor"    value="${bgcolor}"/>
+					</replacetokens>
+				</filterchain>
+			</copy>
+		</sequential>
+	</macrodef>
+</project>

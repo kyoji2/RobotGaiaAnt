@@ -1,0 +1,82 @@
+<project name="textutils">
+
+    <scriptdef name="uppercase" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            value = input.toUpperCase();
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>
+
+
+    <scriptdef name="lowercase" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            value = input.toLowerCase();
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>
+
+
+    <scriptdef name="first-uppercase" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            value = input.substring(0,1).toUpperCase()+input.substring(1);
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>
+
+
+    <scriptdef name="first-lowercase" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            value = input.substring(0,1).toLowerCase()+input.substring(1);
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>
+	
+	<scriptdef name="replace-underscores" language="javascript" >
+		<attribute name="input" />
+		<attribute name="property"    />
+		<![CDATA[
+	        name  = attributes.get("property");
+	        input = attributes.get("input");
+	        value = input.replace(" ", "_");
+	        project.setNewProperty(name, value);		
+		]]>
+	</scriptdef>
+	
+	<scriptdef name="drop-spaces" language="javascript" >
+		<attribute name="input" />
+		<attribute name="property"    />
+		<![CDATA[
+	        name  = attributes.get("property");
+	        input = attributes.get("input");
+	        value = input.replace(" ", "");
+	        project.setNewProperty(name, value);		
+		]]>
+	</scriptdef>
+	
+    <scriptdef name="drop-first-character" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            value = input.substring(1);
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>  		
+</project>
