@@ -2,6 +2,8 @@ RobotGaiaAnt
 
 Build website using Gaia Flash Framework + Robotlegs + Signals.
 
+Base on Sobre Mi's Ant Script:
+http://blog.desarrolloflash.com/
 
 - USAGE:
 
@@ -33,4 +35,3 @@ Gaia Flash Framework	:	http://www.gaiaflashframework.com
 Robotlegs				:	http://www.robotlegs.org
 Signals					:	http://github.com/robertpenner/as3-signals
 Signals extensions		:	http://github.com/robertpenner/signals-extensions-CommandSignal
-Gaia Ant (Sobre Mi)		:	http://blog.desarrolloflash.com/2010/02/actualizacion-del-fichero-site-xml-gaia-framework-con-ant
