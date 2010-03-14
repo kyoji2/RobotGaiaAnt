@@ -161,19 +161,19 @@
 			<if>
 			 	<equals arg1="${seoBytes}" arg2="0" />
 				<then>
-					<xmltask  source="${bin}/site.xml" dest="${bin}/site3.xml">
+					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
 						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>						
 						<attr path="//page[@id='@{input}']" attr="seoBytes" remove="true"/>
 					</xmltask>
 				</then>
 				<else>
-					<xmltask  source="${bin}/site.xml" dest="${bin}/site3.xml">
+					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
 						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>						
 						<attr path="//page[@id='@{input}']" attr="seoBytes" value="@{seoBytes}"/>
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/site.xml"
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml"
 						overwrite="true"/>
 			<delete file="${bin}/site3.xml"/>
 		</sequential>
@@ -181,7 +181,7 @@
 	
 	<macrodef name="update-page-site-xml">
 		<sequential>
-			<xmltask source="${bin}/site.xml" dest="${bin}/site2.xml">
+			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
 				<call path="//page">
 					<param name="swffile" path="@src"/>
 					<param name="htmlfile" path="@seo" default="false"/>
