@@ -23,6 +23,8 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.3.0: now support "package" attribute in page node. (panaewa)
+		external page bug fixed. (panaewa)
 v0.2.0:	Fix bug in "get-branch" macro.
 		Add "refresh-site-xml" function.
 		Refactor folder structure.

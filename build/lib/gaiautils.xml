@@ -1,0 +1,28 @@
+<project name="gaiautils">
+    <scriptdef name="get-page-type" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <attribute name="domain"/>
+        <attribute name="class"/>
+        <attribute name="package"/>        
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            cla = attributes.get("class");
+            baseurl = attributes.get("domain");
+            pack = attributes.get("package");
+            if ( input.indexOf("http") >= 0)
+            {
+            	if ( input.indexOf(baseurl + "/" + cla + ".swf") >= 0 )
+            	{
+            		value = true;
+            	} else {
+            		value = false;
+            	}
+            } else {
+            	value = true;
+            }
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef>
+</project>

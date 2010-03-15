@@ -1,5 +1,5 @@
 ﻿<!-- Set Ant Project Name -->
-<project name="GaiaBase" default="main" basedir=".">
+<project name="Test" default="main" basedir=".">
 	
 	<!-- Set Flex SDK Path -->
 	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
@@ -19,6 +19,7 @@
 	<property name="signals" location="${build}/signals" />
 	
 	<import file="${build}/lib/textutils.xml"/>
+	<import file="${build}/lib/gaiautils.xml"/>
 	<import file="${build}/lib/create-files-actionscript.xml"/>
 	
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar"/>
@@ -109,24 +110,59 @@
 		<echo message="create-pages"/>
 		<xmltask source="${sitexml}">
 			<call path="//page">
-				<param name="package" path="${pages.package}" default="pages"/>
+				<param name="package" path="@package" default=""/>
 				<param name="class" path="@id"/>
+				<param name="source" path="@src"/>
 				<actions>
-				  	<var name="fuppercase" unset="true"/>
-				  	<first-uppercase property="fuppercase" input="@{class}"/>
-					<copy file="${templates}/Page.as" tofile="${gaia.pages}/${fuppercase}Page.as"
-						overwrite="false">
-				        <filterchain>
-				           <replacetokens>
-							    <token key="PACKAGENAME"  value="@{package}"/>
-							  	<token key="CLASSNAME"    value="${fuppercase}Page"/>
-				           		<token key="width"    value="${width}"/>
-				           		<token key="height"    value="${height}"/>
-				           		<token key="framerate"    value="${framerate}"/>
-				           		<token key="bgcolor"    value="${bgcolor}"/>
-				           </replacetokens>
-				        </filterchain>		
-					</copy>
+					<var name="is_external" unset="true"/>
+					<get-page-type property="is_external" 
+						input="@{source}" 
+						domain="${base.url}"
+						class="@{class}"
+						package="@{package}"
+					/>
+					<if>
+					 	<equals arg1="${is_external}" arg2="true" />
+						<then>
+						  	<var name="fuppercase" unset="true"/>
+						  	<first-uppercase property="fuppercase" input="@{class}"/>
+							<if>
+							 	<equals arg1="@{package}" arg2="" />
+								<then>							
+									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as"
+										overwrite="false">
+								        <filterchain>
+								           <replacetokens>
+											    <token key="PACKAGENAME"  value="${pages.package}"/>
+											  	<token key="CLASSNAME"    value="${fuppercase}Page"/>
+								           		<token key="IMPORT"    value=""/>
+								           		<token key="width"    value="${width}"/>
+								           		<token key="height"    value="${height}"/>
+								           		<token key="framerate"    value="${framerate}"/>
+								           		<token key="bgcolor"    value="${bgcolor}"/>
+								           </replacetokens>
+								        </filterchain>		
+									</copy>
+								</then>
+							<else>
+								<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as"
+									overwrite="false">
+							        <filterchain>
+							           <replacetokens>
+										    <token key="PACKAGENAME"  value="${pages.package}.@{package}"/>
+										  	<token key="CLASSNAME"    value="${fuppercase}Page"/>
+							           		<token key="IMPORT"    value="import ${pages.package}.*;"/>
+							           		<token key="width"    value="${width}"/>
+							           		<token key="height"    value="${height}"/>
+							           		<token key="framerate"    value="${framerate}"/>
+							           		<token key="bgcolor"    value="${bgcolor}"/>
+							           </replacetokens>
+							        </filterchain>		
+								</copy>
+							</else>
+							</if>
+						</then>
+					</if>					
 				</actions>
 			</call>
 		</xmltask>		
@@ -341,12 +377,35 @@
 			<call path="//page">
 				<param name="id" path="@id" default="NO ID"/>
 				<param name="dest" path="@src" default="NO ID"/>
+				<param name="pack" path="@package" default=""/>
 				<actions>
-				  	<var name="fuppercase" unset="true"/>
-				  	<first-uppercase property="fuppercase" input="@{id}"/>
-					<compile source="${gaia.pages}/${fuppercase}Page.as" 
-						target="${bin}/@{dest}"
-						debug="false" />
+					<var name="is_external" unset="true"/>
+					<get-page-type property="is_external" 
+						input="@{dest}" 
+						domain="${base.url}"
+						class="@{id}"
+						package="${package}"
+					/>
+					<if>
+					 	<equals arg1="${is_external}" arg2="true" />
+						<then>
+						  	<var name="fuppercase" unset="true"/>
+						  	<first-uppercase property="fuppercase" input="@{id}"/>
+							<if>
+							 	<equals arg1="@{package}" arg2="" />
+								<then>									
+									<compile source="${gaia.pages}/${fuppercase}Page.as" 
+										target="${bin}/@{dest}"
+										debug="false" />
+								</then>
+								<else>
+									<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" 
+										target="${bin}/@{dest}"
+										debug="false" />									
+								</else>
+							</if>
+						</then>
+					</if>						
 				</actions>
 			</call>
 		</xmltask>

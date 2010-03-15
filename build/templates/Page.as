@@ -2,6 +2,7 @@
 {
 	import com.gaiaframework.templates.AbstractPage;
 	import com.greensock.TweenMax;
+	@IMPORT@
 	
 	[SWF(width="@width@", height="@height@", frameRate="@framerate@", backgroundColor="@bgcolor@")]
 	
