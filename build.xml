@@ -1,5 +1,5 @@
 ﻿<!-- Set Ant Project Name -->
-<project name="Test" default="main" basedir=".">
+<project name="RobotGaiaAnt" default="main" basedir=".">
 	
 	<!-- Set Flex SDK Path -->
 	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
@@ -483,14 +483,11 @@
 						<param name="class" path="@id"/>
 						<actions>
 							<var name="uppercase" unset="true"/>
-							<var name="lowercase" unset="true"/>
 							<var name="ruta" unset="true"/>
-							<var name="parentid" unset="true"/>
 							<uppercase property="uppercase" input="@{class}"/>
-							<lowercase property="lowercase" input="@{class}"/>
-							<drop-first-character property="ruta" input="@{parent}/${lowercase}"/>
+							<drop-first-character property="ruta" input="@{parent}/@{class}"/>
 						 	<var name="pagesconst" value="${pagesconst}${line.separator}        public static const ${uppercase}:String = '${ruta}';"/>
-						 	<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/${lowercase}"/>
+						 	<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/@{class}"/>
 						</actions>
 					</call>
 				</xmltask>
