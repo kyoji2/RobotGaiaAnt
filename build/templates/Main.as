@@ -23,16 +23,20 @@ package
 	import flash.events.Event;
 
 	[SWF(width="@width@", height="@height@", frameRate="@framerate@", backgroundColor="@bgcolor@")]
-
 	public class Main extends GaiaMain
 	{
-
 		private var context : IContext;
-		
+
 		public function Main()
 		{
 			super();
 			siteXML = "xml/site.xml";
+		}
+
+		override protected function init() : void 
+		{			
+			context = new MainContext(this);
+			initComplete();
 		}
 
 		override protected function onAddedToStage(event : Event) : void
@@ -40,9 +44,7 @@ package
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			//alignSite(800, 600);
-			
-			context = new MainContext(this);
-			
+
 			super.onAddedToStage(event);
 		}
 
@@ -53,3 +55,4 @@ package
 		}
 	}
 }
+

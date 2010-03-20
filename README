@@ -23,6 +23,8 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.4.0:	change default template.
+		add default keep-as3-metadata compile parameter.
 v0.3.2: update as3-signals to v0.6
 v0.3.1:	Fixed - "get-branch" macro generate a wrong branch when page id contains uppercase char. 
 v0.3.0: now support "package" attribute in page node. (panaewa)

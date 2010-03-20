@@ -36,8 +36,11 @@
 		<delete dir="${src}/models"/>
 		<delete dir="${src}/views"/>
 		<delete dir="${src}/controllers"/>
+		<delete dir="${src}/signals"/>
+		<delete dir="${src}/mvcs"/>
 		<delete file="${src}/Main.as"/>
 		<delete file="${src}/MainContext.as"/>
+		<delete file="${src}/MainMediator.as"/>
 	</target>
 	
 	<target name="create-project" depends="clean, scaffolding, seo-scaffolding, compile-all"/>
@@ -49,13 +52,14 @@
 	<!-- Scaffolding -->
 	<target name="create-base">
 		<mkdir dir="${gaia.pages}"/>
-		<mkdir dir="${src}/models"/>
-		<mkdir dir="${src}/views"/>
-		<mkdir dir="${src}/controllers"/>
 		<mkdir dir="${lib}"/>
 		<mkdir dir="${bin}"/>
 		<mkdir dir="${bin}/js"/>
 		<mkdir dir="${bin}/xml"/>
+		
+		<copy todir="${src}" overwrite="false">
+	    	<fileset dir="${templates}/src"/>
+	  	</copy>
 		
 	  	<copy todir="${lib}" overwrite="false">
 	    	<fileset dir="${gaia}/${gaia.version}"/>
@@ -103,7 +107,15 @@
 	           </replacetokens>
 	        </filterchain>
 		</copy>
-		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false"/>
+		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as"
+			overwrite="false">
+	        <filterchain>
+	           <replacetokens>
+	           		<token key="PACKAGENAME"  value="${pages.package}"/>
+	           </replacetokens>
+	        </filterchain>
+		</copy>
+		<copy file="${templates}/MainMediator.as" tofile="${src}/MainMediator.as" overwrite="false"/>
 	</target>
 	
 	<target name="create-pages">
@@ -466,6 +478,9 @@
 				-->
 				
                 <load-config filename="${flex3dir}/frameworks/flex-config.xml"/>
+    	    	
+    	    	<compiler.keep-as3-metadata name="Inject" />
+    	    	<compiler.keep-as3-metadata name="PostConstruct" />
     	    	
                 <source-path path-element="${flex3dir}/frameworks"/>
     	    	<source-path path-element="${src}"/>
