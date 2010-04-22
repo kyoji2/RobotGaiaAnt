@@ -23,6 +23,12 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.5.0: fix a SignalCommand bug
+		update gaia to v3.2.1
+		update robotlegs to v1.1.0
+		update greensock
+		update as3-signals
+		minor folder structure changes
 v0.4.0:	change default template.
 		add default keep-as3-metadata compile parameter.
 v0.3.2: update as3-signals to v0.6

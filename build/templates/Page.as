@@ -20,7 +20,7 @@
 			TweenLite.to(this, 0.3, {alpha: 1, onComplete: transitionInComplete});
 		}
 		
-		override public function transitionOut():void 
+		override public function transitionOut() : void 
 		{
 			super.transitionOut();
 			TweenLite.to(this, 0.3, {alpha: 0, onComplete: transitionOutComplete});

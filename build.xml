@@ -62,7 +62,7 @@
 	  	</copy>
 		
 	  	<copy todir="${lib}" overwrite="false">
-	    	<fileset dir="${gaia}/${gaia.version}"/>
+	    	<fileset dir="${gaia}"/>
 	  	</copy>
 		
 		<copy todir="${lib}" overwrite="false">
