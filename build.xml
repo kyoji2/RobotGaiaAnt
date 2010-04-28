@@ -311,7 +311,7 @@
 		<attribute name="branch" default="index"/>
 		<attribute name="pagetitle" default="index"/>
 		<sequential>
-			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}.html"
+			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}"
 				overwrite="true">
 		        <filterchain>
 		           <replacetokens>
@@ -326,18 +326,33 @@
 		</sequential>
 	</macrodef>
 	
+	<macrodef name="create-sitemap">
+		<attribute name="sitemap" default=""/>
+		<sequential>
+			<copy file="${templates}/www/sitemap.xml" tofile="${bin}/sitemap.xml"
+				overwrite="true">
+		        <filterchain>
+		           <replacetokens>
+		           		<token key="sitemap"  value="@{sitemap}"/>
+		           </replacetokens>
+		        </filterchain>
+			</copy>
+			<echo message="@{sitemap}"/>
+		</sequential>
+	</macrodef>
+	
 	<macrodef name="add-seo-menu">
 		<attribute name="seomenu" default=""/>
 		<sequential>
 			<copy todir="${bin}" overwrite="true">
 				<fileset dir="${bin}/noseo">
-				    <include name="*.html"/>
+				    
 				</fileset>
 		        <filterchain>
 		           <replacetokens>
 					    <token key="seo"  value="@{seomenu}"/>
 		           </replacetokens>
-		        </filterchain>		
+		        </filterchain>
 			</copy>	
 			<echo message="@{seomenu}"/>
 		</sequential>
@@ -345,12 +360,14 @@
 	
 	<target name="seo-html">
 		<mkdir dir="${bin}/noseo"/>
+		
 		<var name="menu" value="" unset="true"/>
 		<var name="branch" value="" unset="true"/>
 		
-		<create-html-page name="noseo/index" branch="index" pagetitle="${appname}"/>
+		<create-html-page name="noseo/index.html" branch="index" pagetitle="${appname}"/>
 		
 		<var name="menu" value="&lt;li>&lt;a href='${base.url}'>Index&lt;/a>&lt;/li>${line.separator}"/>
+		<var name="sitemap" value="&lt;url>&lt;loc>${base.url}/index.html&lt;/loc>&lt;/url>${line.separator}"/>
 		<xmltask source="${sitexml}">
 			<call path="//page[@seo]">
 				<param name="id" path="@id" default="NO ID"/>
@@ -363,22 +380,30 @@
 					   <echo message="@{id}" />
 					   <get-branch-page input="site" page="@{id}"/>
 					   <echo message="${branch}"/>
-					   <create-html-page name="noseo/@{id}" branch="${branch}" pagetitle="${appname} - @{title}"/>
-					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}@{id}.html'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
+					   <create-html-page name="noseo/@{id}.html" branch="${branch}" pagetitle="@{title}"/>
+					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{id}.html'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
+					   <var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{id}.html&lt;/loc>&lt;/url>${line.separator}"/>
 					 </then>
 					 <else>
+					   <!-- custom seo path -->
 					   <echo message="@{seo}" />
 					   <get-branch-page input="site" page="@{id}"/>
 					   <echo message="${branch}"/>
-					   <create-html-page name="noseo/@{seo}" branch="${branch}" pagetitle="${appname} - @{title}"/>
-					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}@{seo}.html'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
+					   <create-html-page name="noseo/@{seo}" branch="${branch}" pagetitle="@{title}"/>
+					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{seo}'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
+					   <var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{seo}&lt;/loc>&lt;/url>${line.separator}"/>
 					 </else>
 					</if>
+					
 				</actions>
 			</call>
 		</xmltask>
+		
 		<echo message="${menu}" />
 		<add-seo-menu seomenu="${menu}"/>
+		
+		<create-sitemap sitemap="${sitemap}"/>
+		
 		<delete dir="${bin}/noseo"/>
 	</target>
 

@@ -23,6 +23,7 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.5.1: fix some issues in seo-scaffolding
 v0.5.0: fix a SignalCommand bug
 		update gaia to v3.2.1
 		update robotlegs to v1.1.0
