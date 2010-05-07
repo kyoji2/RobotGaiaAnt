@@ -4,7 +4,10 @@
 	<!-- Set Flex SDK Path -->
 	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
 	
+	<property name="version" value="0.5.3" />
+	
 	<property name="build" value="build" />
+	<property name="buildInfo" value="build.txt" />
 	
 	<property name="src" location="src" />
 	<property name="lib" location="lib" />
@@ -16,7 +19,7 @@
 	<property name="templates" location="${build}/templates" />
 	<property name="gaia" location="${build}/gaia" />
 	<property name="robotlegs" location="${build}/robotlegs" />
-	<property name="signals" location="${build}/signals" />
+	<property name="signals" location="${build}/signals" />	
 	
 	<import file="${build}/lib/textutils.xml"/>
 	<import file="${build}/lib/gaiautils.xml"/>
@@ -26,7 +29,7 @@
 	<taskdef name="xmltask" classpath="${build}/lib/xmltask-v1.15.1.jar" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
 	
 	
-	<target name="main" depends="scaffolding, seo-scaffolding, compile-all">
+	<target name="main" depends="scaffolding, seo-scaffolding, compile-all, create-build-info">
 		<echo message="main"/>
 	</target>
 	
@@ -579,23 +582,35 @@
     </macrodef>
 
 	<macrodef name="get-branch">
-			<attribute name="input" default=""/>
-			<attribute name="parent" default=""/>
-			<sequential>
-				<echo message="get-branch: @{input} | @{parent}"/>
-				<xmltask source="${sitexml}">
-					<call path="@{input}/page">
-						<param name="class" path="@id"/>
-						<actions>
-							<var name="uppercase" unset="true"/>
-							<var name="ruta" unset="true"/>
-							<uppercase property="uppercase" input="@{class}"/>
-							<drop-first-character property="ruta" input="@{parent}/@{class}"/>
-						 	<var name="pagesconst" value="${pagesconst}${line.separator}        public static const ${uppercase}:String = '${ruta}';"/>
-						 	<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/@{class}"/>
-						</actions>
-					</call>
-				</xmltask>
-			</sequential>
-		</macrodef>	
+		<attribute name="input" default=""/>
+		<attribute name="parent" default=""/>
+		<sequential>
+			<echo message="get-branch: @{input} | @{parent}"/>
+			<xmltask source="${sitexml}">
+				<call path="@{input}/page">
+					<param name="class" path="@id"/>
+					<actions>
+						<var name="uppercase" unset="true"/>
+						<var name="ruta" unset="true"/>
+						<uppercase property="uppercase" input="@{class}"/>
+						<drop-first-character property="ruta" input="@{parent}/@{class}"/>
+					 	<var name="pagesconst" value="${pagesconst}${line.separator}        public static const ${uppercase}:String = '${ruta}';"/>
+					 	<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/@{class}"/>
+					</actions>
+				</call>
+			</xmltask>
+		</sequential>
+	</macrodef>
+	
+	<target name="create-build-info">
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm" locale="en,UK" />
+		</tstamp>
+		<echo file="${bin}/${buildInfo}">Author:					${user.name}
+Date:					${TODAY}
+Project:				${appname}
+Target player:			${player}
+RobotGaiaAnt version:	${version}
+Built on:				${os.name} (${os.version})</echo>
+	</target>
 </project>
