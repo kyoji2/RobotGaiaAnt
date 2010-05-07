@@ -20,7 +20,6 @@
 	
 	<import file="${build}/lib/textutils.xml"/>
 	<import file="${build}/lib/gaiautils.xml"/>
-	<import file="${build}/lib/create-files-actionscript.xml"/>
 	
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar"/>
 	<taskdef resource="flexTasks.tasks" classpath="${flex3dir}/ant/lib/flexTasks.jar" />	
@@ -43,11 +42,9 @@
 		<delete file="${src}/MainMediator.as"/>
 	</target>
 	
-	<target name="create-project" depends="clean, scaffolding, seo-scaffolding, compile-all"/>
-	
-	<target name="scaffolding" depends="create-base, create-main, create-pages, create-static-page"/>
-	<target name="seo-scaffolding" depends="seo-html" />
-	<target name="compile-all" depends="compile-pages, compile-preloader, compile-main"/>
+	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-pages, create-static-page"/>
+	<target name="seo-scaffolding" description="seo-scaffolding" depends="seo-html" />
+	<target name="compile-all" description="compile-all" depends="compile-pages, compile-preloader, compile-main"/>
 	
 	<!-- Scaffolding -->
 	<target name="create-base">
@@ -195,9 +192,15 @@
 		</copy>
 	</target>
 	
-	<target name="refresh-site-xml">
-		<echo message="refresh-site-xml"/>
+	<target name="xml-update-bytes" description="update bytes in site.xml">
+		<echo message="xml-update-bytes"/>
 	    <update-page-site-xml/>
+		<update-asset-site-xml/>
+	</target>
+	
+	<target name="xml-remove-bytes" description="remove bytes in site.xml">
+		<echo message="xml-remove-bytes"/>
+	    <remove-bytes-site-xml/>
 	</target>
 	
 	<macrodef name="update-bytes-page">
@@ -207,23 +210,57 @@
 		<sequential>
 			<echo message="@{input}"/>
 			<if>
-			 	<equals arg1="${seoBytes}" arg2="0" />
+			 	<equals arg1="@{seoBytes}" arg2="0" />
 				<then>
 					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
-						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>						
+						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>
 						<attr path="//page[@id='@{input}']" attr="seoBytes" remove="true"/>
 					</xmltask>
 				</then>
 				<else>
 					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
-						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>						
+						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>
 						<attr path="//page[@id='@{input}']" attr="seoBytes" value="@{seoBytes}"/>
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml"
-						overwrite="true"/>
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
 			<delete file="${bin}/site3.xml"/>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="update-bytes-asset">
+		<attribute name="input" default="home"/>
+		<attribute name="bytes" default="0"/>
+		<sequential>
+			<echo message="@{input}"/>
+			<if>
+			 	<equals arg1="@{bytes}" arg2="0" />
+				<then>
+					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">						
+						<attr path="//asset[@id='@{input}']" attr="bytes" remove="true"/>
+					</xmltask>
+				</then>
+				<else>
+					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
+						<attr path="//asset[@id='@{input}']" attr="bytes" value="@{bytes}"/>
+					</xmltask>
+				</else>
+			</if>
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
+			<delete file="${bin}/site3.xml"/>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="remove-bytes-site-xml">
+		<sequential>
+			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
+				<attr path="//page" attr="bytes" remove="true"/>
+				<attr path="//page" attr="seoBytes" remove="true"/>
+				<attr path="//asset" attr="bytes" remove="true"/>
+			</xmltask>
+			<copy file="${bin}/site2.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
+			<delete file="${bin}/site2.xml"/>
 		</sequential>
 	</macrodef>
 	
@@ -241,9 +278,9 @@
 						<var name="existHtmlId" value="" unset="true"/>
 						<var name="bytes" unset="true"/>
 						<var name="seoBytes" value="0" unset="true"/>
-						<available file="${bin}\@{swffile}" property="existSwf"/>
-						<available file="${bin}\@{htmlfile}.html" property="existHtmlSeo"/>
-						<available file="${bin}\@{ident}.html" property="existHtmlId"/>
+						<available file="${bin}/@{swffile}" property="existSwf"/>
+						<available file="${bin}/@{htmlfile}" property="existHtmlSeo"/>
+						<available file="${bin}/@{ident}.html" property="existHtmlId"/>						
 						<if>
 						 	<equals arg1="${existSwf}" arg2="true" />
 						 	<then>
@@ -252,19 +289,47 @@
 								<if>
 								 	<equals arg1="${existHtmlSeo}" arg2="true" />
 								 	<then>
-										<length file="${bin}/@{htmlfile}.html" property="seoBytes" />
+										<length file="${bin}/@{htmlfile}" property="seoBytes" />
 								 	</then>
 								<elseif>
-									<equals arg1="${existHtmlId}" arg2="true" />
+									<and>
+										<equals arg1="${existHtmlId}" arg2="true" />
+										<not><equals arg1="@{ident}" arg2="index" /></not>
+									</and>
 								  	<then>
 										<length file="${bin}/@{ident}.html" property="seoBytes" />
-								  	</then>
+									</then>
 								</elseif>
 								<else>
 									<var name="seoBytes" value="0"/>
 								</else>
-								</if>						 		
+								</if>
 						 		<update-bytes-page input="@{ident}" bytes="${bytes}" seoBytes="${seoBytes}"/>
+						 	</then>
+						</if>
+					</actions>
+				</call>		
+			</xmltask>
+			<delete file="${bin}/site2.xml"/>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="update-asset-site-xml">
+		<sequential>
+			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
+				<call path="//asset">
+					<param name="file" path="@src"/>
+					<param name="ident" path="@id" default="false"/>
+					<actions>
+						<var name="branch" value="" unset="true"/>
+						<var name="existFile" value="" unset="true"/>
+						<var name="bytes" value="0" unset="true"/>
+						<available file="${bin}/@{file}" property="existFile"/>
+						<if>
+						 	<equals arg1="${existFile}" arg2="true" />
+						 	<then>
+						 		<length file="${bin}/@{file}" property="bytes" />
+						 		<update-bytes-asset input="@{ident}" bytes="${bytes}" />
 						 	</then>
 						</if>
 					</actions>
@@ -408,7 +473,7 @@
 	</target>
 
 	<!-- Compile -->
-	<target name="compile-pages">
+	<target name="compile-pages" description="compile-pages">
 		<echo message="compile-pages"/>
 		<xmltask source="${sitexml}">
 			<call path="//page">
@@ -448,14 +513,14 @@
 		</xmltask>
 	</target>
 	
-	<target name="compile-preloader">
+	<target name="compile-preloader" description="compile-preloader">
 		<echo message="compile-preloader"/>
 		<compile source="${gaia.pages}/Preloader.as" 
 			target="${bin}/preload.swf"
 			debug="false" />
 	</target>	
 
-	<target name="compile-main">
+	<target name="compile-main" description="compile-main">
 		<echo message="compile-main"/>
 		<compile source="${src}/Main.as" 
 			target="${bin}/main.swf"
