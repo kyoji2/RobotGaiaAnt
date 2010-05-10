@@ -23,6 +23,7 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.5.4: update gaia to v3.2.2
 v0.5.3:	added: create-build-info
 v0.5.2: added: update asset's bytes function
 		added: xml-remove-bytes
