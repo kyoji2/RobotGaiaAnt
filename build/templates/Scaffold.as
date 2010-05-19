@@ -12,7 +12,7 @@
 * http://www.opensource.org/licenses/gpl-2.0.php 
 *****************************************************************************************************/
 
-package pages
+package @PACKAGENAME@
 {
 	import com.gaiaframework.events.PageEvent;
 	import flash.net.URLRequest;

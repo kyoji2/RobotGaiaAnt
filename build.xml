@@ -4,7 +4,7 @@
 	<!-- Set Flex SDK Path -->
 	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
 	
-	<property name="version" value="0.5.3" />
+	<property name="version" value="0.5.5" />
 	
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -80,11 +80,26 @@
 	           		<token key="height"    value="${height}"/>
 	           		<token key="framerate"    value="${framerate}"/>
 	           		<token key="bgcolor"    value="${bgcolor}"/>
+	        	   	<token key="PACKAGENAME"  value="${pages.package}"/>
 	           </replacetokens>
 	        </filterchain>
 		</copy>
 		
-		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false"/>
+		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false">
+			<filterchain>
+	           <replacetokens>
+	           		<token key="PACKAGENAME"  value="${pages.package}"/>
+	           </replacetokens>
+	        </filterchain>
+		</copy>
+		
+		<copy file="${templates}/PreloaderScaffold.as" tofile="${src}/${pages.package}/PreloaderScaffold.as" overwrite="false">
+			<filterchain>
+	           <replacetokens>
+	           		<token key="PACKAGENAME"  value="${pages.package}"/>
+	           </replacetokens>
+	        </filterchain>
+		</copy>
 		
 	  	<copy todir="${bin}/js" overwrite="false">
 	    	<fileset dir="${templates}/www/js"/>

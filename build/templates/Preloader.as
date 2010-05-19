@@ -12,36 +12,36 @@
 * http://www.opensource.org/licenses/gpl-2.0.php 
 *****************************************************************************************************/
 
-package pages
+package @PACKAGENAME@
 {
 	import com.gaiaframework.templates.AbstractPreloader;
 	import com.gaiaframework.events.AssetEvent;
 	
 	[SWF(width="@width@", height="@height@", frameRate="@framerate@", backgroundColor="@bgcolor@")]
-	
 	public class Preloader extends AbstractPreloader
 	{	
-		//public var scaffold:PreloaderScaffold;
+		private var scaffold : PreloaderScaffold;
 		
 		public function Preloader()
 		{
 			super();
-			//scaffold = new PreloaderScaffold();
+			scaffold = new PreloaderScaffold();
+			addChild(scaffold);
 		}
 
-		override public function transitionIn():void
+		override public function transitionIn() : void
 		{
-			//scaffold.transitionIn();
+			scaffold.transitionIn();
 			transitionInComplete();
 		}		
-		override public function transitionOut():void
+		override public function transitionOut() : void
 		{
-			//scaffold.transitionOut();
+			scaffold.transitionOut();
 			transitionOutComplete();
 		}
-		override public function onProgress(event:AssetEvent):void
+		override public function onProgress(event : AssetEvent) : void
 		{
-			//scaffold.onProgress(event);
+			scaffold.onProgress(event);
 		}
 	}
 }
