@@ -500,6 +500,7 @@
 				<param name="pack" path="@package" default=""/>
 				<actions>
 					<var name="is_external" unset="true"/>
+					<var name="existPageClass" unset="true"/>
 					<get-page-type property="is_external" 
 						input="@{dest}" 
 						domain="${base.url}"
@@ -513,15 +514,33 @@
 						  	<first-uppercase property="fuppercase" input="@{id}"/>
 							<if>
 							 	<equals arg1="@{package}" arg2="" />
-								<then>									
-									<compile source="${gaia.pages}/${fuppercase}Page.as" 
-										target="${bin}/@{dest}"
-										debug="false" />
+								<then>
+									<available file="${gaia.pages}/${fuppercase}Page.as" property="existPageClass"/>
+									<if>
+										<equals arg1="${existPageClass}" arg2="true" />
+										<then>
+											<compile source="${gaia.pages}/${fuppercase}Page.as" 
+												target="${bin}/@{dest}"
+												debug="false" />
+										</then>
+										<else>
+											<echo message="${gaia.pages}/${fuppercase}Page.as no exist, skipped." />
+										</else>
+									</if>
 								</then>
 								<else>
-									<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" 
-										target="${bin}/@{dest}"
-										debug="false" />									
+									<available file="${gaia.pages}/@{pack}/${fuppercase}Page.as" property="existPageClass"/>
+									<if>
+										<equals arg1="${existPageClass}" arg2="true" />
+										<then>
+											<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" 
+												target="${bin}/@{dest}"
+												debug="false" />
+										</then>									
+										<else>
+											<echo message="${gaia.pages}/@{pack}/${fuppercase}Page.as no exist, skipped." />
+										</else>
+									</if>
 								</else>
 							</if>
 						</then>

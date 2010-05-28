@@ -32,9 +32,9 @@
 			// signals
 			injector.mapSingleton(AppSignalBus);
 			
-			// init commands			
-			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, StartupCommand, ContextEvent, true);
+			// init commands
 			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, InitSignalMappingCommand, ContextEvent, true);
+			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, StartupCommand, ContextEvent, true);
 			
 			// views
 			mediatorMap.mapView(Main, MainMediator);

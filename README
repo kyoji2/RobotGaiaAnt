@@ -23,6 +23,8 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.5.6:	skip non-exist page class in compile-page
+		small fixes in page template
 v0.5.5:	add PreloadScaffold
 		small fixes in scaffold template
 v0.5.4: update gaia to v3.2.2
