@@ -23,6 +23,9 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.5.7:	update robotlegs and SignalCommand plugin
+		update greesock
+		update as-signals to v0.7
 v0.5.6:	skip non-exist page class in compile-page
 		small fixes in page template
 v0.5.5:	add PreloadScaffold

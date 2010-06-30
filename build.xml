@@ -4,7 +4,7 @@
 	<!-- Set Flex SDK Path -->
 	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
 	
-	<property name="version" value="0.5.5" />
+	<property name="version" value="0.5.7" />
 	
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
