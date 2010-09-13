@@ -1,527 +1,493 @@
 ﻿<!-- Set Ant Project Name -->
-<project name="RobotGaiaAnt" default="main" basedir=".">
+<project name="RobotGaia" default="main" basedir=".">
 	
-	<!-- Set Flex SDK Path -->
-	<property name="FLEX_HOME" value="C:/sdk/flex_sdk_3.5"/>
+	<property environment="env."/>
 	
-	<property name="version" value="0.5.7" />
-	
+	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
+	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
+
+	<property name="version" value="0.6.0" />
+
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
-	
+
 	<property name="src" location="src" />
 	<property name="lib" location="lib" />
 	<property name="bin" location="bin" />
-	
-	<property file="${build}/flex.properties"/>
-	<property file="${build}/gaia.properties"/>
-	
+
+	<property file="${build}/flex.properties" />
+	<property file="${build}/gaia.properties" />
+
 	<property name="templates" location="${build}/templates" />
-	<property name="gaia" location="${build}/gaia" />
-	<property name="robotlegs" location="${build}/robotlegs" />
-	<property name="signals" location="${build}/signals" />	
-	
-	<import file="${build}/lib/textutils.xml"/>
-	<import file="${build}/lib/gaiautils.xml"/>
-	
-	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar"/>
-	<taskdef resource="flexTasks.tasks" classpath="${flex3dir}/ant/lib/flexTasks.jar" />	
-	<taskdef name="xmltask" classpath="${build}/lib/xmltask-v1.15.1.jar" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
-	
-	
+
+	<import file="${build}/lib/textutils.xml" />
+	<import file="${build}/lib/gaiautils.xml" />
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar" />
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	<taskdef name="xmltask" classpath="${build}/lib/xmltask-v1.15.1.jar" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
+
+
 	<target name="main" depends="scaffolding, seo-scaffolding, compile-all, create-build-info">
-		<echo message="main"/>
+		<echo message="main" />
 	</target>
-	
+
 	<target name="clean">
-		<delete dir="${gaia.pages}"/>
-		<delete dir="${src}/models"/>
-		<delete dir="${src}/views"/>
-		<delete dir="${src}/controllers"/>
-		<delete dir="${src}/signals"/>
-		<delete dir="${src}/mvcs"/>
-		<delete file="${src}/Main.as"/>
-		<delete file="${src}/MainContext.as"/>
-		<delete file="${src}/MainMediator.as"/>
+		<delete dir="${gaia.pages}" />
+		<delete dir="${src}/models" />
+		<delete dir="${src}/views" />
+		<delete dir="${src}/controllers" />
+		<delete dir="${src}/signals" />
+		<delete dir="${src}/base" />
+		<delete file="${src}/Main.as" />
+		<delete file="${src}/MainContext.as" />
 	</target>
-	
-	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-pages, create-static-page"/>
+
+	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-pages, create-static-page" />
 	<target name="seo-scaffolding" description="seo-scaffolding" depends="seo-html" />
-	<target name="compile-all" description="compile-all" depends="compile-pages, compile-preloader, compile-main"/>
-	
+	<target name="compile-all" description="compile-all" depends="compile-pages, compile-preloader, compile-main" />
+
 	<!-- Scaffolding -->
 	<target name="create-base">
-		<mkdir dir="${gaia.pages}"/>
-		<mkdir dir="${lib}"/>
-		<mkdir dir="${bin}"/>
-		<mkdir dir="${bin}/js"/>
-		<mkdir dir="${bin}/xml"/>
-		
+		<mkdir dir="${gaia.pages}" />
+		<mkdir dir="${lib}" />
+		<mkdir dir="${bin}" />
+		<mkdir dir="${bin}/js" />
+		<mkdir dir="${bin}/xml" />
+
 		<copy todir="${src}" overwrite="false">
-	    	<fileset dir="${templates}/src"/>
-	  	</copy>
-		
-	  	<copy todir="${lib}" overwrite="false">
-	    	<fileset dir="${gaia}"/>
-	  	</copy>
-		
+			<fileset dir="${templates}/src" />
+		</copy>
+
 		<copy todir="${lib}" overwrite="false">
-	    	<fileset dir="${robotlegs}"/>
-	  	</copy>
-		
-		<copy todir="${lib}" overwrite="false">
-	    	<fileset dir="${signals}"/>
-	  	</copy>
+			<fileset dir="${templates}/lib" />
+		</copy>
 
 		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false">
 			<filterchain>
-	           <replacetokens>
-	           		<token key="width"    value="${width}"/>
-	           		<token key="height"    value="${height}"/>
-	           		<token key="framerate"    value="${framerate}"/>
-	           		<token key="bgcolor"    value="${bgcolor}"/>
-	        	   	<token key="PACKAGENAME"  value="${pages.package}"/>
-	           </replacetokens>
-	        </filterchain>
+				<replacetokens>
+					<token key="width" value="${width}" />
+					<token key="height" value="${height}" />
+					<token key="framerate" value="${framerate}" />
+					<token key="bgcolor" value="${bgcolor}" />
+					<token key="PACKAGENAME" value="${pages.package}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
-		
+
 		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false">
 			<filterchain>
-	           <replacetokens>
-	           		<token key="PACKAGENAME"  value="${pages.package}"/>
-	           </replacetokens>
-	        </filterchain>
+				<replacetokens>
+					<token key="PACKAGENAME" value="${pages.package}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
-		
+
 		<copy file="${templates}/PreloaderScaffold.as" tofile="${src}/${pages.package}/PreloaderScaffold.as" overwrite="false">
 			<filterchain>
-	           <replacetokens>
-	           		<token key="PACKAGENAME"  value="${pages.package}"/>
-	           </replacetokens>
-	        </filterchain>
+				<replacetokens>
+					<token key="PACKAGENAME" value="${pages.package}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
-		
-	  	<copy todir="${bin}/js" overwrite="false">
-	    	<fileset dir="${templates}/www/js"/>
-	  	</copy>	
-		
-		<copy file="${templates}/www/expressInstall.swf" tofile="${bin}/expressInstall.swf" overwrite="false"/>
-		<copy file="${templates}/www/scaffold.swf" tofile="${bin}/scaffold.swf" overwrite="false"/>
-		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false"/>
+
+		<copy todir="${bin}/js" overwrite="false">
+			<fileset dir="${templates}/www/js" />
+		</copy>
+
+		<copy file="${templates}/www/expressInstall.swf" tofile="${bin}/expressInstall.swf" overwrite="false" />
+		<copy file="${templates}/www/scaffold.swf" tofile="${bin}/scaffold.swf" overwrite="false" />
+		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false" />
 	</target>
-	
+
 	<target name="create-main">
-		<copy file="${templates}/Main.as" tofile="${src}/Main.as"
-			overwrite="false">
-	        <filterchain>
-	           <replacetokens>
-	           		<token key="width"    value="${width}"/>
-	           		<token key="height"    value="${height}"/>
-	           		<token key="framerate"    value="${framerate}"/>
-	           		<token key="bgcolor"    value="${bgcolor}"/>
-	           </replacetokens>
-	        </filterchain>
+		<copy file="${templates}/Main.as" tofile="${src}/Main.as" overwrite="false">
+			<filterchain>
+				<replacetokens>
+					<token key="width" value="${width}" />
+					<token key="height" value="${height}" />
+					<token key="framerate" value="${framerate}" />
+					<token key="bgcolor" value="${bgcolor}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
-		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as"
-			overwrite="false">
-	        <filterchain>
-	           <replacetokens>
-	           		<token key="PACKAGENAME"  value="${pages.package}"/>
-	           </replacetokens>
-	        </filterchain>
-		</copy>
-		<copy file="${templates}/MainMediator.as" tofile="${src}/MainMediator.as" overwrite="false"/>
+		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false" />
 	</target>
-	
+
 	<target name="create-pages">
-		<echo message="create-pages"/>
+		<echo message="create-pages" />
 		<xmltask source="${sitexml}">
 			<call path="//page">
-				<param name="package" path="@package" default=""/>
-				<param name="class" path="@id"/>
-				<param name="source" path="@src"/>
+				<param name="package" path="@package" default="" />
+				<param name="class" path="@id" />
+				<param name="source" path="@src" />
 				<actions>
-					<var name="is_external" unset="true"/>
-					<get-page-type property="is_external" 
-						input="@{source}" 
-						domain="${base.url}"
-						class="@{class}"
-						package="@{package}"
-					/>
+					<var name="is_external" unset="true" />
+					<get-page-type property="is_external" input="@{source}" domain="${base.url}" class="@{class}" package="@{package}" />
 					<if>
-					 	<equals arg1="${is_external}" arg2="true" />
+						<equals arg1="${is_external}" arg2="true" />
 						<then>
-						  	<var name="fuppercase" unset="true"/>
-						  	<first-uppercase property="fuppercase" input="@{class}"/>
+							<var name="fuppercase" unset="true" />
+							<first-uppercase property="fuppercase" input="@{class}" />
 							<if>
-							 	<equals arg1="@{package}" arg2="" />
-								<then>							
-									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as"
-										overwrite="false">
-								        <filterchain>
-								           <replacetokens>
-											    <token key="PACKAGENAME"  value="${pages.package}"/>
-											  	<token key="CLASSNAME"    value="${fuppercase}Page"/>
-								           		<token key="IMPORT"    value=""/>
-								           		<token key="width"    value="${width}"/>
-								           		<token key="height"    value="${height}"/>
-								           		<token key="framerate"    value="${framerate}"/>
-								           		<token key="bgcolor"    value="${bgcolor}"/>
-								           </replacetokens>
-								        </filterchain>		
+								<equals arg1="@{package}" arg2="" />
+								<then>
+									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false">
+										<filterchain>
+											<replacetokens>
+												<token key="PACKAGENAME" value="${pages.package}" />
+												<token key="CLASSNAME" value="${fuppercase}Page" />
+												<token key="IMPORT" value="" />
+												<token key="width" value="${width}" />
+												<token key="height" value="${height}" />
+												<token key="framerate" value="${framerate}" />
+												<token key="bgcolor" value="${bgcolor}" />
+											</replacetokens>
+										</filterchain>
 									</copy>
 								</then>
-							<else>
-								<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as"
-									overwrite="false">
-							        <filterchain>
-							           <replacetokens>
-										    <token key="PACKAGENAME"  value="${pages.package}.@{package}"/>
-										  	<token key="CLASSNAME"    value="${fuppercase}Page"/>
-							           		<token key="IMPORT"    value="import ${pages.package}.*;"/>
-							           		<token key="width"    value="${width}"/>
-							           		<token key="height"    value="${height}"/>
-							           		<token key="framerate"    value="${framerate}"/>
-							           		<token key="bgcolor"    value="${bgcolor}"/>
-							           </replacetokens>
-							        </filterchain>		
-								</copy>
-							</else>
+								<else>
+									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false">
+										<filterchain>
+											<replacetokens>
+												<token key="PACKAGENAME" value="${pages.package}.@{package}" />
+												<token key="CLASSNAME" value="${fuppercase}Page" />
+												<token key="IMPORT" value="import ${pages.package}.*;" />
+												<token key="width" value="${width}" />
+												<token key="height" value="${height}" />
+												<token key="framerate" value="${framerate}" />
+												<token key="bgcolor" value="${bgcolor}" />
+											</replacetokens>
+										</filterchain>
+									</copy>
+								</else>
 							</if>
 						</then>
-					</if>					
+					</if>
 				</actions>
 			</call>
-		</xmltask>		
+		</xmltask>
 	</target>
-	
+
 	<target name="create-static-page">
-		<echo message="create-static-page"/>
-		<var name="pagesconst" value="//PageConstants"/>
-		<get-branch input="site"/>
-		<copy file="${templates}/StaticReferencePages.as" tofile="${gaia.pages}/Pages.as"
-			overwrite="true">
-	        <filterchain>
-	           <replacetokens>
-				    <token key="PACKAGENAME"  value="${pages.package}"/>
-				  	<token key="PAGES"        value="${pagesconst}"/>
-	           </replacetokens>
-	        </filterchain>		
+		<echo message="create-static-page" />
+		<var name="pagesconst" value="//PageConstants" />
+		<get-branch input="site" />
+		<copy file="${templates}/StaticReferencePages.as" tofile="${gaia.pages}/Pages.as" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="PACKAGENAME" value="${pages.package}" />
+					<token key="PAGES" value="${pagesconst}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
 	</target>
-	
+
 	<target name="xml-update-bytes" description="update bytes in site.xml">
-		<echo message="xml-update-bytes"/>
-	    <update-page-site-xml/>
-		<update-asset-site-xml/>
+		<echo message="xml-update-bytes" />
+		<update-page-site-xml />
+		<update-asset-site-xml />
 	</target>
-	
+
 	<target name="xml-remove-bytes" description="remove bytes in site.xml">
-		<echo message="xml-remove-bytes"/>
-	    <remove-bytes-site-xml/>
+		<echo message="xml-remove-bytes" />
+		<remove-bytes-site-xml />
 	</target>
-	
+
 	<macrodef name="update-bytes-page">
-		<attribute name="input" default="home"/>
-		<attribute name="bytes" default="0"/>
-		<attribute name="seoBytes" default="0"/>
+		<attribute name="input" default="home" />
+		<attribute name="bytes" default="0" />
+		<attribute name="seoBytes" default="0" />
 		<sequential>
-			<echo message="@{input}"/>
+			<echo message="@{input}" />
 			<if>
-			 	<equals arg1="@{seoBytes}" arg2="0" />
+				<equals arg1="@{seoBytes}" arg2="0" />
 				<then>
-					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
-						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>
-						<attr path="//page[@id='@{input}']" attr="seoBytes" remove="true"/>
+					<xmltask source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
+						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}" />
+						<attr path="//page[@id='@{input}']" attr="seoBytes" remove="true" />
 					</xmltask>
 				</then>
 				<else>
-					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
-						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}"/>
-						<attr path="//page[@id='@{input}']" attr="seoBytes" value="@{seoBytes}"/>
+					<xmltask source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
+						<attr path="//page[@id='@{input}']" attr="bytes" value="@{bytes}" />
+						<attr path="//page[@id='@{input}']" attr="seoBytes" value="@{seoBytes}" />
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
-			<delete file="${bin}/site3.xml"/>
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<delete file="${bin}/site3.xml" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="update-bytes-asset">
-		<attribute name="input" default="home"/>
-		<attribute name="bytes" default="0"/>
+		<attribute name="input" default="home" />
+		<attribute name="bytes" default="0" />
 		<sequential>
-			<echo message="@{input}"/>
+			<echo message="@{input}" />
 			<if>
-			 	<equals arg1="@{bytes}" arg2="0" />
+				<equals arg1="@{bytes}" arg2="0" />
 				<then>
-					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">						
-						<attr path="//asset[@id='@{input}']" attr="bytes" remove="true"/>
+					<xmltask source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
+						<attr path="//asset[@id='@{input}']" attr="bytes" remove="true" />
 					</xmltask>
 				</then>
 				<else>
-					<xmltask  source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
-						<attr path="//asset[@id='@{input}']" attr="bytes" value="@{bytes}"/>
+					<xmltask source="${bin}/xml/site.xml" dest="${bin}/site3.xml">
+						<attr path="//asset[@id='@{input}']" attr="bytes" value="@{bytes}" />
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
-			<delete file="${bin}/site3.xml"/>
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<delete file="${bin}/site3.xml" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="remove-bytes-site-xml">
 		<sequential>
 			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
-				<attr path="//page" attr="bytes" remove="true"/>
-				<attr path="//page" attr="seoBytes" remove="true"/>
-				<attr path="//asset" attr="bytes" remove="true"/>
+				<attr path="//page" attr="bytes" remove="true" />
+				<attr path="//page" attr="seoBytes" remove="true" />
+				<attr path="//asset" attr="bytes" remove="true" />
 			</xmltask>
-			<copy file="${bin}/site2.xml" tofile="${bin}/xml/site.xml" overwrite="true"/>
-			<delete file="${bin}/site2.xml"/>
+			<copy file="${bin}/site2.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<delete file="${bin}/site2.xml" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="update-page-site-xml">
 		<sequential>
 			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
 				<call path="//page">
-					<param name="swffile" path="@src"/>
-					<param name="htmlfile" path="@seo" default="false"/>
-					<param name="ident" path="@id" default="false"/>
+					<param name="swffile" path="@src" />
+					<param name="htmlfile" path="@seo" default="false" />
+					<param name="ident" path="@id" default="false" />
 					<actions>
-						<var name="branch" value="" unset="true"/>
-						<var name="existSwf" value="" unset="true"/>
-						<var name="existHtmlSeo" value="" unset="true"/>
-						<var name="existHtmlId" value="" unset="true"/>
-						<var name="bytes" unset="true"/>
-						<var name="seoBytes" value="0" unset="true"/>
-						<available file="${bin}/@{swffile}" property="existSwf"/>
-						<available file="${bin}/@{htmlfile}" property="existHtmlSeo"/>
-						<available file="${bin}/@{ident}.html" property="existHtmlId"/>						
+						<var name="branch" value="" unset="true" />
+						<var name="existSwf" value="" unset="true" />
+						<var name="existHtmlSeo" value="" unset="true" />
+						<var name="existHtmlId" value="" unset="true" />
+						<var name="bytes" unset="true" />
+						<var name="seoBytes" value="0" unset="true" />
+						<available file="${bin}/@{swffile}" property="existSwf" />
+						<available file="${bin}/@{htmlfile}" property="existHtmlSeo" />
+						<available file="${bin}/@{ident}.html" property="existHtmlId" />
 						<if>
-						 	<equals arg1="${existSwf}" arg2="true" />
-						 	<then>
-						 		<length file="${bin}/@{swffile}" property="bytes" />
-								<get-branch-page input="site" page="@{ident}"/>
+							<equals arg1="${existSwf}" arg2="true" />
+							<then>
+								<length file="${bin}/@{swffile}" property="bytes" />
+								<get-branch-page input="site" page="@{ident}" />
 								<if>
-								 	<equals arg1="${existHtmlSeo}" arg2="true" />
-								 	<then>
+									<equals arg1="${existHtmlSeo}" arg2="true" />
+									<then>
 										<length file="${bin}/@{htmlfile}" property="seoBytes" />
-								 	</then>
-								<elseif>
-									<and>
-										<equals arg1="${existHtmlId}" arg2="true" />
-										<not><equals arg1="@{ident}" arg2="index" /></not>
-									</and>
-								  	<then>
-										<length file="${bin}/@{ident}.html" property="seoBytes" />
 									</then>
-								</elseif>
-								<else>
-									<var name="seoBytes" value="0"/>
-								</else>
+									<elseif>
+										<and>
+											<equals arg1="${existHtmlId}" arg2="true" />
+											<not>
+												<equals arg1="@{ident}" arg2="index" />
+											</not>
+										</and>
+										<then>
+											<length file="${bin}/@{ident}.html" property="seoBytes" />
+										</then>
+									</elseif>
+									<else>
+										<var name="seoBytes" value="0" />
+									</else>
 								</if>
-						 		<update-bytes-page input="@{ident}" bytes="${bytes}" seoBytes="${seoBytes}"/>
-						 	</then>
+								<update-bytes-page input="@{ident}" bytes="${bytes}" seoBytes="${seoBytes}" />
+							</then>
 						</if>
 					</actions>
-				</call>		
+				</call>
 			</xmltask>
-			<delete file="${bin}/site2.xml"/>
+			<delete file="${bin}/site2.xml" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="update-asset-site-xml">
 		<sequential>
 			<xmltask source="${bin}/xml/site.xml" dest="${bin}/site2.xml">
 				<call path="//asset">
-					<param name="file" path="@src"/>
-					<param name="ident" path="@id" default="false"/>
+					<param name="file" path="@src" />
+					<param name="ident" path="@id" default="false" />
 					<actions>
-						<var name="branch" value="" unset="true"/>
-						<var name="existFile" value="" unset="true"/>
-						<var name="bytes" value="0" unset="true"/>
-						<available file="${bin}/@{file}" property="existFile"/>
+						<var name="branch" value="" unset="true" />
+						<var name="existFile" value="" unset="true" />
+						<var name="bytes" value="0" unset="true" />
+						<available file="${bin}/@{file}" property="existFile" />
 						<if>
-						 	<equals arg1="${existFile}" arg2="true" />
-						 	<then>
-						 		<length file="${bin}/@{file}" property="bytes" />
-						 		<update-bytes-asset input="@{ident}" bytes="${bytes}" />
-						 	</then>
+							<equals arg1="${existFile}" arg2="true" />
+							<then>
+								<length file="${bin}/@{file}" property="bytes" />
+								<update-bytes-asset input="@{ident}" bytes="${bytes}" />
+							</then>
 						</if>
 					</actions>
-				</call>		
+				</call>
 			</xmltask>
-			<delete file="${bin}/site2.xml"/>
+			<delete file="${bin}/site2.xml" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="get-branch-page">
-		<attribute name="input" default=""/>
-		<attribute name="parent" default=""/>
-		<attribute name="page" default="index"/>
+		<attribute name="input" default="" />
+		<attribute name="parent" default="" />
+		<attribute name="page" default="index" />
 		<sequential>
-			<echo message="get-branch-page: @{input}"/>
+			<echo message="get-branch-page: @{input}" />
 			<xmltask source="${sitexml}">
 				<call path="@{input}/page">
-					<param name="class" path="@id"/>
-					<param name="seo" path="@seo" default="false"/>
+					<param name="class" path="@id" />
+					<param name="seo" path="@seo" default="false" />
 					<actions>
-						<var name="uppercase" unset="true"/>
-						<var name="lowercase" unset="true"/>
-						<var name="ruta" unset="true"/>
-						<uppercase property="uppercase" input="@{class}"/>
-						<lowercase property="lowercase" input="@{class}"/>
-						<drop-first-character property="ruta" input="@{parent}/${lowercase}"/>
+						<var name="uppercase" unset="true" />
+						<var name="lowercase" unset="true" />
+						<var name="ruta" unset="true" />
+						<uppercase property="uppercase" input="@{class}" />
+						<lowercase property="lowercase" input="@{class}" />
+						<drop-first-character property="ruta" input="@{parent}/${lowercase}" />
 						<if>
-						 <equals arg1="@{class}" arg2="@{page}" />
-						 <then>
-						 	<var name="branch" value="${ruta}"/>
-						 </then>
-						 <else>
-						 	<get-branch-page input="@{input}/page" page="@{page}" parent="@{parent}/${lowercase}"/>
-						 </else>
-						</if>						
+							<equals arg1="@{class}" arg2="@{page}" />
+							<then>
+								<var name="branch" value="${ruta}" />
+							</then>
+							<else>
+								<get-branch-page input="@{input}/page" page="@{page}" parent="@{parent}/${lowercase}" />
+							</else>
+						</if>
 					</actions>
 				</call>
 			</xmltask>
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="create-html-page">
-		<attribute name="name" default="index"/>
-		<attribute name="branch" default="index"/>
-		<attribute name="pagetitle" default="index"/>
+		<attribute name="name" default="index" />
+		<attribute name="branch" default="index" />
+		<attribute name="pagetitle" default="index" />
 		<sequential>
-			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}"
-				overwrite="true">
-		        <filterchain>
-		           <replacetokens>
-		           		<token key="title"  value="${appname}"/>
-		          	 	<token key="player"  value="${player}"/>
-					    <token key="branch"  value="@{branch}"/>
-					  	<token key="baseurl" value="${base.url}"/>
-		           		<token key="pagetitle" value="@{pagetitle}"/>
-		           </replacetokens>
-		        </filterchain>
-			</copy>				
-		</sequential>
-	</macrodef>
-	
-	<macrodef name="create-sitemap">
-		<attribute name="sitemap" default=""/>
-		<sequential>
-			<copy file="${templates}/www/sitemap.xml" tofile="${bin}/sitemap.xml"
-				overwrite="true">
-		        <filterchain>
-		           <replacetokens>
-		           		<token key="sitemap"  value="@{sitemap}"/>
-		           </replacetokens>
-		        </filterchain>
+			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}" overwrite="true">
+				<filterchain>
+					<replacetokens>
+						<token key="title" value="${appname}" />
+						<token key="player" value="${player}" />
+						<token key="branch" value="@{branch}" />
+						<token key="baseurl" value="${base.url}" />
+						<token key="pagetitle" value="@{pagetitle}" />
+					</replacetokens>
+				</filterchain>
 			</copy>
-			<echo message="@{sitemap}"/>
 		</sequential>
 	</macrodef>
-	
+
+	<macrodef name="create-sitemap">
+		<attribute name="sitemap" default="" />
+		<sequential>
+			<copy file="${templates}/www/sitemap.xml" tofile="${bin}/sitemap.xml" overwrite="true">
+				<filterchain>
+					<replacetokens>
+						<token key="sitemap" value="@{sitemap}" />
+					</replacetokens>
+				</filterchain>
+			</copy>
+			<echo message="@{sitemap}" />
+		</sequential>
+	</macrodef>
+
 	<macrodef name="add-seo-menu">
-		<attribute name="seomenu" default=""/>
+		<attribute name="seomenu" default="" />
 		<sequential>
 			<copy todir="${bin}" overwrite="true">
 				<fileset dir="${bin}/noseo">
-				    
+
 				</fileset>
-		        <filterchain>
-		           <replacetokens>
-					    <token key="seo"  value="@{seomenu}"/>
-		           </replacetokens>
-		        </filterchain>
-			</copy>	
-			<echo message="@{seomenu}"/>
+				<filterchain>
+					<replacetokens>
+						<token key="seo" value="@{seomenu}" />
+					</replacetokens>
+				</filterchain>
+			</copy>
+			<echo message="@{seomenu}" />
 		</sequential>
-	</macrodef>		
-	
+	</macrodef>
+
 	<target name="seo-html">
-		<mkdir dir="${bin}/noseo"/>
-		
-		<var name="menu" value="" unset="true"/>
-		<var name="branch" value="" unset="true"/>
-		
-		<create-html-page name="noseo/index.html" branch="index" pagetitle="${appname}"/>
-		
-		<var name="menu" value="&lt;li>&lt;a href='${base.url}'>Index&lt;/a>&lt;/li>${line.separator}"/>
-		<var name="sitemap" value="&lt;url>&lt;loc>${base.url}/index.html&lt;/loc>&lt;/url>${line.separator}"/>
+		<mkdir dir="${bin}/noseo" />
+
+		<var name="menu" value="" unset="true" />
+		<var name="branch" value="" unset="true" />
+
+		<create-html-page name="noseo/index.html" branch="index" pagetitle="${appname}" />
+
+		<var name="menu" value="&lt;li>&lt;a href='${base.url}'>Index&lt;/a>&lt;/li>${line.separator}" />
+		<var name="sitemap" value="&lt;url>&lt;loc>${base.url}/index.html&lt;/loc>&lt;/url>${line.separator}" />
 		<xmltask source="${sitexml}">
 			<call path="//page[@seo]">
-				<param name="id" path="@id" default="NO ID"/>
-				<param name="seo" path="@seo" default="false"/>
-				<param name="title" path="@title" default=""/>
+				<param name="id" path="@id" default="NO ID" />
+				<param name="seo" path="@seo" default="false" />
+				<param name="title" path="@title" default="" />
 				<actions>
 					<if>
-					 <equals arg1="@{seo}" arg2="true" />
-					 <then>
-					   <echo message="@{id}" />
-					   <get-branch-page input="site" page="@{id}"/>
-					   <echo message="${branch}"/>
-					   <create-html-page name="noseo/@{id}.html" branch="${branch}" pagetitle="@{title}"/>
-					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{id}.html'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
-					   <var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{id}.html&lt;/loc>&lt;/url>${line.separator}"/>
-					 </then>
-					 <else>
-					   <!-- custom seo path -->
-					   <echo message="@{seo}" />
-					   <get-branch-page input="site" page="@{id}"/>
-					   <echo message="${branch}"/>
-					   <create-html-page name="noseo/@{seo}" branch="${branch}" pagetitle="@{title}"/>
-					   <var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{seo}'>@{title}&lt;/a>&lt;/li>${line.separator}"/>
-					   <var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{seo}&lt;/loc>&lt;/url>${line.separator}"/>
-					 </else>
+						<equals arg1="@{seo}" arg2="true" />
+						<then>
+							<echo message="@{id}" />
+							<get-branch-page input="site" page="@{id}" />
+							<echo message="${branch}" />
+							<create-html-page name="noseo/@{id}.html" branch="${branch}" pagetitle="@{title}" />
+							<var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{id}.html'>@{title}&lt;/a>&lt;/li>${line.separator}" />
+							<var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{id}.html&lt;/loc>&lt;/url>${line.separator}" />
+						</then>
+						<else>
+							<!-- custom seo path -->
+							<echo message="@{seo}" />
+							<get-branch-page input="site" page="@{id}" />
+							<echo message="${branch}" />
+							<create-html-page name="noseo/@{seo}" branch="${branch}" pagetitle="@{title}" />
+							<var name="menu" value="${menu}&lt;li>&lt;a href='${base.url}/@{seo}'>@{title}&lt;/a>&lt;/li>${line.separator}" />
+							<var name="sitemap" value="${sitemap}&lt;url>&lt;loc>${base.url}/@{seo}&lt;/loc>&lt;/url>${line.separator}" />
+						</else>
 					</if>
-					
+
 				</actions>
 			</call>
 		</xmltask>
-		
+
 		<echo message="${menu}" />
-		<add-seo-menu seomenu="${menu}"/>
-		
-		<create-sitemap sitemap="${sitemap}"/>
-		
-		<delete dir="${bin}/noseo"/>
+		<add-seo-menu seomenu="${menu}" />
+
+		<create-sitemap sitemap="${sitemap}" />
+
+		<delete dir="${bin}/noseo" />
 	</target>
 
 	<!-- Compile -->
 	<target name="compile-pages" description="compile-pages">
-		<echo message="compile-pages"/>
+		<echo message="compile-pages" />
 		<xmltask source="${sitexml}">
 			<call path="//page">
-				<param name="id" path="@id" default="NO ID"/>
-				<param name="dest" path="@src" default="NO ID"/>
-				<param name="pack" path="@package" default=""/>
+				<param name="id" path="@id" default="NO ID" />
+				<param name="dest" path="@src" default="NO ID" />
+				<param name="pack" path="@package" default="" />
 				<actions>
-					<var name="is_external" unset="true"/>
-					<var name="existPageClass" unset="true"/>
-					<get-page-type property="is_external" 
-						input="@{dest}" 
-						domain="${base.url}"
-						class="@{id}"
-						package="${package}"
-					/>
+					<var name="is_external" unset="true" />
+					<var name="existPageClass" unset="true" />
+					<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
 					<if>
-					 	<equals arg1="${is_external}" arg2="true" />
+						<equals arg1="${is_external}" arg2="true" />
 						<then>
-						  	<var name="fuppercase" unset="true"/>
-						  	<first-uppercase property="fuppercase" input="@{id}"/>
+							<var name="fuppercase" unset="true" />
+							<first-uppercase property="fuppercase" input="@{id}" />
 							<if>
-							 	<equals arg1="@{package}" arg2="" />
+								<equals arg1="@{package}" arg2="" />
 								<then>
-									<available file="${gaia.pages}/${fuppercase}Page.as" property="existPageClass"/>
+									<available file="${gaia.pages}/${fuppercase}Page.as" property="existPageClass" />
 									<if>
 										<equals arg1="${existPageClass}" arg2="true" />
 										<then>
-											<compile source="${gaia.pages}/${fuppercase}Page.as" 
-												target="${bin}/@{dest}"
-												debug="false" />
+											<compile source="${gaia.pages}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
 										</then>
 										<else>
 											<echo message="${gaia.pages}/${fuppercase}Page.as no exist, skipped." />
@@ -529,14 +495,12 @@
 									</if>
 								</then>
 								<else>
-									<available file="${gaia.pages}/@{pack}/${fuppercase}Page.as" property="existPageClass"/>
+									<available file="${gaia.pages}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
 									<if>
 										<equals arg1="${existPageClass}" arg2="true" />
 										<then>
-											<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" 
-												target="${bin}/@{dest}"
-												debug="false" />
-										</then>									
+											<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+										</then>
 										<else>
 											<echo message="${gaia.pages}/@{pack}/${fuppercase}Page.as no exist, skipped." />
 										</else>
@@ -544,55 +508,47 @@
 								</else>
 							</if>
 						</then>
-					</if>						
+					</if>
 				</actions>
 			</call>
 		</xmltask>
 	</target>
-	
+
 	<target name="compile-preloader" description="compile-preloader">
-		<echo message="compile-preloader"/>
-		<compile source="${gaia.pages}/Preloader.as" 
-			target="${bin}/preload.swf"
-			debug="false" />
-	</target>	
+		<echo message="compile-preloader" />
+		<compile source="${gaia.pages}/Preloader.as" target="${bin}/preload.swf" debug="false" />
+	</target>
 
 	<target name="compile-main" description="compile-main">
-		<echo message="compile-main"/>
-		<compile source="${src}/Main.as" 
-			target="${bin}/main.swf"
-			debug="false" />
+		<echo message="compile-main" />
+		<compile source="${src}/Main.as" target="${bin}/main.swf" debug="false" />
 		<!--
 	    <exec executable="${flashplayer}">
 	        <arg line="${gaia.bin}/main.swf" />
 	    </exec>
 	    -->
 	</target>
-	
-    <macrodef name="compile">
-    	<attribute name="source" />
-    	<attribute name="target" default="bin" />
-    	<attribute name="debug" default="false" />
-        <sequential>
-    	    <mxmlc file="@{source}"
-                output="@{target}"
-    	    	debug="@{debug}"
-    	    	target-player="${player}" 
-    	    	optimize="true">
-    	    	
-    	    	
-    	    	<compiler.library-path dir="${lib}">
-    	    		<include name="**/*.swc" />
-    	    		<include name="${project.lib.linked0}" />
-    	    		<include name="${project.lib.linked1}" />
-    	    		<include name="${project.lib.linked2}" />
+
+	<macrodef name="compile">
+		<attribute name="source" />
+		<attribute name="target" default="bin" />
+		<attribute name="debug" default="false" />
+		<sequential>
+			<mxmlc file="@{source}" output="@{target}" debug="@{debug}" target-player="${player}" optimize="true">
+
+
+				<compiler.library-path dir="${lib}">
+					<include name="**/*.swc" />
+					<include name="${project.lib.linked0}" />
+					<include name="${project.lib.linked1}" />
+					<include name="${project.lib.linked2}" />
 					<exclude name="${project.lib.exclude0}" />
 					<exclude name="${project.lib.exclude1}" />
 					<exclude name="${project.lib.exclude2}" />
-    	    	</compiler.library-path>
-				
-    	    	
-    	    	<!--
+				</compiler.library-path>
+
+
+				<!--
     	    	<compiler.external-library-path dir="${lib}">
     	    		<include name="**/*.swc" />
     	    		<include name="${project.lib.linked0}" />
@@ -603,39 +559,41 @@
 					<exclude name="${project.lib.exclude2}" />
 				</compiler.external-library-path>
 				-->
-				
-                <load-config filename="${flex3dir}/frameworks/flex-config.xml"/>
-    	    	
-    	    	<compiler.keep-as3-metadata name="Inject" />
-    	    	<compiler.keep-as3-metadata name="PostConstruct" />
-    	    	
-                <source-path path-element="${flex3dir}/frameworks"/>
-    	    	<source-path path-element="${src}"/>
-            </mxmlc>
-        </sequential>
-    </macrodef>
+
+				<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+
+				<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+
+				<compiler.keep-as3-metadata name="Inject" />
+				<compiler.keep-as3-metadata name="PostConstruct" />
+
+				<source-path path-element="${FLEX_HOME}/frameworks" />
+				<source-path path-element="${src}" />
+			</mxmlc>
+		</sequential>
+	</macrodef>
 
 	<macrodef name="get-branch">
-		<attribute name="input" default=""/>
-		<attribute name="parent" default=""/>
+		<attribute name="input" default="" />
+		<attribute name="parent" default="" />
 		<sequential>
-			<echo message="get-branch: @{input} | @{parent}"/>
+			<echo message="get-branch: @{input} | @{parent}" />
 			<xmltask source="${sitexml}">
 				<call path="@{input}/page">
-					<param name="class" path="@id"/>
+					<param name="class" path="@id" />
 					<actions>
-						<var name="uppercase" unset="true"/>
-						<var name="ruta" unset="true"/>
-						<uppercase property="uppercase" input="@{class}"/>
-						<drop-first-character property="ruta" input="@{parent}/@{class}"/>
-					 	<var name="pagesconst" value="${pagesconst}${line.separator}        public static const ${uppercase}:String = '${ruta}';"/>
-					 	<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/@{class}"/>
+						<var name="uppercase" unset="true" />
+						<var name="ruta" unset="true" />
+						<uppercase property="uppercase" input="@{class}" />
+						<drop-first-character property="ruta" input="@{parent}/@{class}" />
+						<var name="pagesconst" value="${pagesconst}${line.separator}        public static const ${uppercase}:String = '${ruta}';" />
+						<get-branch input="@{input}/page[@id='@{class}']" parent="@{parent}/@{class}" />
 					</actions>
 				</call>
 			</xmltask>
 		</sequential>
 	</macrodef>
-	
+
 	<target name="create-build-info">
 		<tstamp>
 			<format property="TODAY" pattern="yyyy-MM-dd HH:mm" locale="en,UK" />

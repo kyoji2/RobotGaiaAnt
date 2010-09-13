@@ -1,6 +1,6 @@
 package models 
 {
-	import mvcs.AppActor;
+	import base.AppActor;
 	
 	public class AppModel extends AppActor implements IAppModel
 	{

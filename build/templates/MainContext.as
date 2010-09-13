@@ -1,5 +1,7 @@
-﻿package  
+﻿package
 {
+	import base.ModulePageMediator;
+
 	import controllers.InitSignalMappingCommand;
 	import controllers.StartupCommand;
 
@@ -9,11 +11,12 @@
 	import signals.AppSignalBus;
 
 	import org.robotlegs.base.ContextEvent;
-	import org.robotlegs.mvcs.SignalContext;
+	import org.robotlegs.mvcs.ModuleSignalContext;
+	import org.robotlegs.utilities.modular.core.IModule;
 
 	import flash.display.DisplayObjectContainer;
-	
-	public class MainContext extends SignalContext 
+
+	public class MainContext extends ModuleSignalContext
 	{
 
 		public function MainContext(contextView : DisplayObjectContainer)
@@ -24,26 +27,21 @@
 		override public function startup() : void
 		{
 			// service
-			
-			
+
+
 			// model
 			injector.mapSingletonOf(IAppModel, AppModel);
-			
+
 			// signals
 			injector.mapSingleton(AppSignalBus);
-			
+
 			// init commands
 			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, InitSignalMappingCommand, ContextEvent, true);
 			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, StartupCommand, ContextEvent, true);
-			
-			// views
-			mediatorMap.mapView(Main, MainMediator);
-			mediatorMap.createMediator(contextView);
-			mediatorMap.enabled = false;
-			
-			viewMap.mapPackage("@PACKAGENAME@");
-			viewMap.enabled = false;
-			
+
+			// init mediators
+			mediatorMap.mapView(IModule, ModulePageMediator, IModule);
+
 			super.startup();
 		}
 	}

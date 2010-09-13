@@ -23,6 +23,10 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.6.0: Must update! Memory leak fixed!
+		rewrite structure, now using modular plugin.
+		rewrite template.
+		update robotlegs to v1.1.2
 v0.5.7:	update robotlegs and SignalCommand plugin
 		update greesock
 		update as-signals to v0.7
