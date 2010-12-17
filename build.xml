@@ -1,12 +1,13 @@
-﻿<!-- Set Ant Project Name -->
-<project name="RobotGaia" default="main" basedir=".">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Set Ant Project Name -->
+<project name="RobotGaiaDemo" default="main" basedir=".">
 	
 	<property environment="env."/>
 	
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.0" />
+	<property name="version" value="0.6.1" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -55,15 +56,15 @@
 		<mkdir dir="${bin}/js" />
 		<mkdir dir="${bin}/xml" />
 
-		<copy todir="${src}" overwrite="false">
+		<copy todir="${src}" overwrite="false" encoding="UTF-8">
 			<fileset dir="${templates}/src" />
 		</copy>
 
-		<copy todir="${lib}" overwrite="false">
+		<copy todir="${lib}" overwrite="false" encoding="UTF-8">
 			<fileset dir="${templates}/lib" />
 		</copy>
 
-		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false">
+		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="width" value="${width}" />
@@ -75,7 +76,7 @@
 			</filterchain>
 		</copy>
 
-		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false">
+		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="PACKAGENAME" value="${pages.package}" />
@@ -83,7 +84,7 @@
 			</filterchain>
 		</copy>
 
-		<copy file="${templates}/PreloaderScaffold.as" tofile="${src}/${pages.package}/PreloaderScaffold.as" overwrite="false">
+		<copy file="${templates}/PreloaderScaffold.as" tofile="${src}/${pages.package}/PreloaderScaffold.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="PACKAGENAME" value="${pages.package}" />
@@ -91,17 +92,17 @@
 			</filterchain>
 		</copy>
 
-		<copy todir="${bin}/js" overwrite="false">
+		<copy todir="${bin}/js" overwrite="false" encoding="UTF-8">
 			<fileset dir="${templates}/www/js" />
 		</copy>
 
-		<copy file="${templates}/www/expressInstall.swf" tofile="${bin}/expressInstall.swf" overwrite="false" />
-		<copy file="${templates}/www/scaffold.swf" tofile="${bin}/scaffold.swf" overwrite="false" />
-		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false" />
+		<copy file="${templates}/www/expressInstall.swf" tofile="${bin}/expressInstall.swf" overwrite="false" encoding="UTF-8" />
+		<copy file="${templates}/www/scaffold.swf" tofile="${bin}/scaffold.swf" overwrite="false" encoding="UTF-8" />
+		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false" encoding="UTF-8" />
 	</target>
 
 	<target name="create-main">
-		<copy file="${templates}/Main.as" tofile="${src}/Main.as" overwrite="false">
+		<copy file="${templates}/Main.as" tofile="${src}/Main.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="width" value="${width}" />
@@ -111,7 +112,7 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
-		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false" />
+		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false" encoding="UTF-8" />
 	</target>
 
 	<target name="create-pages">
@@ -132,7 +133,7 @@
 							<if>
 								<equals arg1="@{package}" arg2="" />
 								<then>
-									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false">
+									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
 										<filterchain>
 											<replacetokens>
 												<token key="PACKAGENAME" value="${pages.package}" />
@@ -147,7 +148,7 @@
 									</copy>
 								</then>
 								<else>
-									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false">
+									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
 										<filterchain>
 											<replacetokens>
 												<token key="PACKAGENAME" value="${pages.package}.@{package}" />
@@ -173,7 +174,7 @@
 		<echo message="create-static-page" />
 		<var name="pagesconst" value="//PageConstants" />
 		<get-branch input="site" />
-		<copy file="${templates}/StaticReferencePages.as" tofile="${gaia.pages}/Pages.as" overwrite="true">
+		<copy file="${templates}/StaticReferencePages.as" tofile="${gaia.pages}/Pages.as" overwrite="true" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="PACKAGENAME" value="${pages.package}" />
@@ -215,7 +216,7 @@
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" encoding="UTF-8" />
 			<delete file="${bin}/site3.xml" />
 		</sequential>
 	</macrodef>
@@ -238,7 +239,7 @@
 					</xmltask>
 				</else>
 			</if>
-			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<copy file="${bin}/site3.xml" tofile="${bin}/xml/site.xml" overwrite="true" encoding="UTF-8" />
 			<delete file="${bin}/site3.xml" />
 		</sequential>
 	</macrodef>
@@ -250,7 +251,7 @@
 				<attr path="//page" attr="seoBytes" remove="true" />
 				<attr path="//asset" attr="bytes" remove="true" />
 			</xmltask>
-			<copy file="${bin}/site2.xml" tofile="${bin}/xml/site.xml" overwrite="true" />
+			<copy file="${bin}/site2.xml" tofile="${bin}/xml/site.xml" overwrite="true" encoding="UTF-8" />
 			<delete file="${bin}/site2.xml" />
 		</sequential>
 	</macrodef>
@@ -369,7 +370,7 @@
 		<attribute name="branch" default="index" />
 		<attribute name="pagetitle" default="index" />
 		<sequential>
-			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}" overwrite="true">
+			<copy file="${templates}/www/index.html" tofile="${bin}/@{name}" overwrite="true" encoding="UTF-8">
 				<filterchain>
 					<replacetokens>
 						<token key="title" value="${appname}" />
@@ -386,7 +387,7 @@
 	<macrodef name="create-sitemap">
 		<attribute name="sitemap" default="" />
 		<sequential>
-			<copy file="${templates}/www/sitemap.xml" tofile="${bin}/sitemap.xml" overwrite="true">
+			<copy file="${templates}/www/sitemap.xml" tofile="${bin}/sitemap.xml" overwrite="true" encoding="UTF-8">
 				<filterchain>
 					<replacetokens>
 						<token key="sitemap" value="@{sitemap}" />
@@ -400,7 +401,7 @@
 	<macrodef name="add-seo-menu">
 		<attribute name="seomenu" default="" />
 		<sequential>
-			<copy todir="${bin}" overwrite="true">
+			<copy todir="${bin}" overwrite="true" encoding="UTF-8">
 				<fileset dir="${bin}/noseo">
 
 				</fileset>

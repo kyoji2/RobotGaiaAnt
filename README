@@ -23,6 +23,7 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.6.1:	fix unicode problem while copying files.
 v0.6.0: Must update! Memory leak fixed!
 		rewrite structure, now using modular plugin.
 		rewrite template.
