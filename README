@@ -23,13 +23,17 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.6.2: update robotlegs to v1.1.4
+		update as3-signals to v0.8
+		update greensock
+		fix title in site.xml template
 v0.6.1:	fix unicode problem while copying files.
 v0.6.0: Must update! Memory leak fixed!
 		rewrite structure, now using modular plugin.
 		rewrite template.
 		update robotlegs to v1.1.2
 v0.5.7:	update robotlegs and SignalCommand plugin
-		update greesock
+		update greensock
 		update as-signals to v0.7
 v0.5.6:	skip non-exist page class in compile-page
 		small fixes in page template

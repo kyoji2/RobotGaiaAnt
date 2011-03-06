@@ -7,7 +7,7 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.1" />
+	<property name="version" value="0.6.2" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -98,7 +98,14 @@
 
 		<copy file="${templates}/www/expressInstall.swf" tofile="${bin}/expressInstall.swf" overwrite="false" encoding="UTF-8" />
 		<copy file="${templates}/www/scaffold.swf" tofile="${bin}/scaffold.swf" overwrite="false" encoding="UTF-8" />
-		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false" encoding="UTF-8" />
+		
+		<copy file="${templates}/www/xml/site.xml" tofile="${bin}/xml/site.xml" overwrite="false" encoding="UTF-8">
+			<filterchain>
+				<replacetokens>
+					<token key="title" value="${appname}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
 	</target>
 
 	<target name="create-main">
