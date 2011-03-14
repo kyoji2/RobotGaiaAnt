@@ -58,6 +58,17 @@
 		]]>
 	</scriptdef>
 	
+	<scriptdef name="replace-dot" language="javascript" >
+		<attribute name="input" />
+		<attribute name="property"    />
+		<![CDATA[
+	        name  = attributes.get("property");
+	        input = attributes.get("input");
+	        value = input.replace(".", "/");
+	        project.setNewProperty(name, value);		
+		]]>
+	</scriptdef>
+	
 	<scriptdef name="drop-spaces" language="javascript" >
 		<attribute name="input" />
 		<attribute name="property"    />

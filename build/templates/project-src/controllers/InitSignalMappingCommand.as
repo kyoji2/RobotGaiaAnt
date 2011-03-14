@@ -1,6 +1,6 @@
-package controllers 
+package @PACKAGENAME@.controllers 
 {
-	import signals.AppSignalBus;
+	import @PACKAGENAME@.signals.AppSignalBus;
 
 	import org.robotlegs.mvcs.SignalCommand;
 	

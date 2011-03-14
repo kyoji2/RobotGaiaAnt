@@ -17,6 +17,8 @@ package
 	import com.gaiaframework.core.GaiaMain;
 
 	import org.robotlegs.core.IContext;
+	
+	import @PACKAGENAME@.contexts.MainContext;
 
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;

@@ -1,4 +1,4 @@
-package controllers 
+package @PACKAGENAME@.controllers 
 {
 	import org.robotlegs.mvcs.Command;
 	

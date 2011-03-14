@@ -1,4 +1,4 @@
-package base
+package com.kevincao.robotgaia
 {
 	import com.gaiaframework.templates.AbstractPage;
 

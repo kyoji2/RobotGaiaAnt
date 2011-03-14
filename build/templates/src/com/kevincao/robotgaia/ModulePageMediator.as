@@ -1,4 +1,4 @@
-package base
+package com.kevincao.robotgaia
 {
 	import org.robotlegs.core.IInjector;
 	import org.robotlegs.utilities.modular.core.IModule;

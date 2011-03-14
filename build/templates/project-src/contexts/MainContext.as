@@ -1,14 +1,14 @@
-﻿package
+﻿package @PACKAGENAME@.contexts
 {
-	import base.ModulePageMediator;
+	import com.kevincao.robotgaia.ModulePageMediator;
 
-	import controllers.InitSignalMappingCommand;
-	import controllers.StartupCommand;
+	import @PACKAGENAME@.controllers.InitSignalMappingCommand;
+	import @PACKAGENAME@.controllers.StartupCommand;
 
-	import models.AppModel;
-	import models.IAppModel;
+	import @PACKAGENAME@.models.AppModel;
+	import @PACKAGENAME@.models.IAppModel;
 
-	import signals.AppSignalBus;
+	import @PACKAGENAME@.signals.AppSignalBus;
 
 	import org.robotlegs.base.ContextEvent;
 	import org.robotlegs.mvcs.ModuleSignalContext;

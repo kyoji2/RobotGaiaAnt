@@ -1,6 +1,6 @@
-package models 
+package @PACKAGENAME@.models 
 {
-	import base.AppActor;
+	import @PACKAGENAME@.mvcs.AppActor;
 	
 	public class AppModel extends AppActor implements IAppModel
 	{

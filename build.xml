@@ -7,7 +7,7 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.3" />
+	<property name="version" value="0.6.5" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -35,7 +35,7 @@
 	</target>
 
 	<target name="clean">
-		<delete dir="${gaia.pages}" />
+		<delete dir="${pages.src}" />
 		<delete dir="${src}/models" />
 		<delete dir="${src}/views" />
 		<delete dir="${src}/controllers" />
@@ -43,7 +43,6 @@
 		<delete dir="${src}/base" />
 		<delete file="${src}/Main.as" />
 		<delete file="${src}/MainContext.as" />
-		<delete file="${ide}" />
 	</target>
 
 	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-preload, create-pages, create-static-page" />
@@ -52,33 +51,49 @@
 
 	<!-- Scaffolding -->
 	<target name="create-base">
-		<mkdir dir="${gaia.pages}" />
+		<property name="pages.full.package" value="${project.package}.${pages.package}" />
+				
+		<var name="project.src" unset="true" />
+		<replace-dot property="project.src" input="${src}/${project.package}" />
+		
+		<property name="pages.src" value="${project.src}/${pages.package}" />
+		
+		<mkdir dir="${pages.src}" />
 		<mkdir dir="${lib}" />
 		<mkdir dir="${bin}" />
 		<mkdir dir="${ide}" />
 		<mkdir dir="${bin}/js" />
 		<mkdir dir="${bin}/xml" />
-
+		
 		<copy todir="${src}" overwrite="false" encoding="UTF-8">
-			<fileset dir="${templates}/src" />
+			<fileset dir="${templates}/src/" />
+		</copy>
+		
+		<copy todir="${project.src}" overwrite="false" encoding="UTF-8">
+			<fileset dir="${templates}/project-src" />
+			<filterchain>
+				<replacetokens>
+					<token key="PACKAGENAME" value="${project.package}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
 
 		<copy todir="${lib}" overwrite="false" encoding="UTF-8">
 			<fileset dir="${templates}/lib" />
 		</copy>
 
-		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false" encoding="UTF-8">
+		<copy file="${templates}/Scaffold.as" tofile="${pages.src}/Scaffold.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
-					<token key="PACKAGENAME" value="${pages.package}" />
+					<token key="PACKAGENAME" value="${pages.full.package}" />
 				</replacetokens>
 			</filterchain>
 		</copy>
 
-		<copy file="${templates}/PreloaderScaffold.as" tofile="${src}/${pages.package}/PreloaderScaffold.as" overwrite="false" encoding="UTF-8">
+		<copy file="${templates}/PreloaderScaffold.as" tofile="${pages.src}/PreloaderScaffold.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
-					<token key="PACKAGENAME" value="${pages.package}" />
+					<token key="PACKAGENAME" value="${pages.full.package}" />
 				</replacetokens>
 			</filterchain>
 		</copy>
@@ -109,28 +124,28 @@
 					<token key="height" value="${height}" />
 					<token key="framerate" value="${framerate}" />
 					<token key="bgcolor" value="${bgcolor}" />
+					<token key="PACKAGENAME" value="${project.package}" />
 				</replacetokens>
 			</filterchain>
 		</copy>
-		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false" encoding="UTF-8" />
 		
 		<create-xfl name="main" document="Main" />
 	</target>
 	
 	<target name="create-preload">
-		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false" encoding="UTF-8">
+		<copy file="${templates}/Preloader.as" tofile="${pages.src}/Preloader.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
 					<token key="width" value="${width}" />
 					<token key="height" value="${height}" />
 					<token key="framerate" value="${framerate}" />
 					<token key="bgcolor" value="${bgcolor}" />
-					<token key="PACKAGENAME" value="${pages.package}" />
+					<token key="PACKAGENAME" value="${pages.full.package}" />
 				</replacetokens>
 			</filterchain>
 		</copy>
 		
-		<create-xfl name="preload" document="${pages.package}.Preloader" />
+		<create-xfl name="preload" document="${pages.full.package}.Preloader" />
 	</target>
 
 	<target name="create-pages">
@@ -151,10 +166,10 @@
 							<if>
 								<equals arg1="@{package}" arg2="" />
 								<then>
-									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
+									<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
 										<filterchain>
 											<replacetokens>
-												<token key="PACKAGENAME" value="${pages.package}" />
+												<token key="PACKAGENAME" value="${pages.full.package}" />
 												<token key="CLASSNAME" value="${fuppercase}Page" />
 												<token key="IMPORT" value="" />
 												<token key="width" value="${width}" />
@@ -164,15 +179,15 @@
 											</replacetokens>
 										</filterchain>
 									</copy>
-									<create-xfl name="@{class}" document="${pages.package}.${fuppercase}Page" />
+									<create-xfl name="@{class}" document="${pages.full.package}.${fuppercase}Page" />
 								</then>
 								<else>
-									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
+									<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
 										<filterchain>
 											<replacetokens>
-												<token key="PACKAGENAME" value="${pages.package}.@{package}" />
+												<token key="PACKAGENAME" value="${pages.full.package}.@{package}" />
 												<token key="CLASSNAME" value="${fuppercase}Page" />
-												<token key="IMPORT" value="import ${pages.package}.*;" />
+												<token key="IMPORT" value="import ${pages.full.package}.*;" />
 												<token key="width" value="${width}" />
 												<token key="height" value="${height}" />
 												<token key="framerate" value="${framerate}" />
@@ -180,7 +195,7 @@
 											</replacetokens>
 										</filterchain>
 									</copy>
-									<create-xfl name="@{class}" document="${pages.package}.@{package}.${fuppercase}Page" />
+									<create-xfl name="@{class}" document="${pages.full.package}.@{package}.${fuppercase}Page" />
 								</else>
 							</if>
 						</then>
@@ -194,10 +209,10 @@
 		<echo message="create-static-page" />
 		<var name="pagesconst" value="//PageConstants" />
 		<get-branch input="site" />
-		<copy file="${templates}/StaticReferencePages.as" tofile="${gaia.pages}/Pages.as" overwrite="true" encoding="UTF-8">
+		<copy file="${templates}/StaticReferencePages.as" tofile="${pages.src}/Pages.as" overwrite="true" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
-					<token key="PACKAGENAME" value="${pages.package}" />
+					<token key="PACKAGENAME" value="${pages.full.package}" />
 					<token key="PAGES" value="${pagesconst}" />
 				</replacetokens>
 			</filterchain>
@@ -539,26 +554,26 @@
 							<if>
 								<equals arg1="@{package}" arg2="" />
 								<then>
-									<available file="${gaia.pages}/${fuppercase}Page.as" property="existPageClass" />
+									<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
 									<if>
 										<equals arg1="${existPageClass}" arg2="true" />
 										<then>
-											<compile source="${gaia.pages}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+											<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
 										</then>
 										<else>
-											<echo message="${gaia.pages}/${fuppercase}Page.as no exist, skipped." />
+											<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
 										</else>
 									</if>
 								</then>
 								<else>
-									<available file="${gaia.pages}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
+									<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
 									<if>
 										<equals arg1="${existPageClass}" arg2="true" />
 										<then>
-											<compile source="${gaia.pages}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+											<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
 										</then>
 										<else>
-											<echo message="${gaia.pages}/@{pack}/${fuppercase}Page.as no exist, skipped." />
+											<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
 										</else>
 									</if>
 								</else>
@@ -572,7 +587,7 @@
 
 	<target name="compile-preloader" description="compile-preloader">
 		<echo message="compile-preloader" />
-		<compile source="${gaia.pages}/Preloader.as" target="${bin}/preload.swf" debug="false" />
+		<compile source="${pages.src}/Preloader.as" target="${bin}/preload.swf" debug="false" />
 	</target>
 
 	<target name="compile-main" description="compile-main">

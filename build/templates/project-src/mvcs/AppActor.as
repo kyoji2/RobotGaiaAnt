@@ -1,6 +1,6 @@
-package base
+package @PACKAGENAME@.mvcs
 {
-	import signals.AppSignalBus;
+	import @PACKAGENAME@.signals.AppSignalBus;
 
 	import org.robotlegs.mvcs.Actor;
 

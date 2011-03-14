@@ -23,6 +23,8 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.6.5: update pagckage's structure
+v0.6.3: add create xfl file feature
 v0.6.2: update robotlegs to v1.1.4
 		update as3-signals to v0.8
 		update greensock
