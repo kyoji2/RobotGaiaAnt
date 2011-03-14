@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Set Ant Project Name -->
-<project name="RobotGaiaDemo" default="main" basedir=".">
+<project name="RobotGaia" default="main" basedir=".">
 	
 	<property environment="env."/>
 	
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.2" />
+	<property name="version" value="0.6.3" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -15,6 +15,7 @@
 	<property name="src" location="src" />
 	<property name="lib" location="lib" />
 	<property name="bin" location="bin" />
+	<property name="ide" location="ide" />
 
 	<property file="${build}/flex.properties" />
 	<property file="${build}/gaia.properties" />
@@ -23,7 +24,7 @@
 
 	<import file="${build}/lib/textutils.xml" />
 	<import file="${build}/lib/gaiautils.xml" />
-
+	
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar" />
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	<taskdef name="xmltask" classpath="${build}/lib/xmltask-v1.15.1.jar" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
@@ -42,9 +43,10 @@
 		<delete dir="${src}/base" />
 		<delete file="${src}/Main.as" />
 		<delete file="${src}/MainContext.as" />
+		<delete file="${ide}" />
 	</target>
 
-	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-pages, create-static-page" />
+	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-preload, create-pages, create-static-page" />
 	<target name="seo-scaffolding" description="seo-scaffolding" depends="seo-html" />
 	<target name="compile-all" description="compile-all" depends="compile-pages, compile-preloader, compile-main" />
 
@@ -53,6 +55,7 @@
 		<mkdir dir="${gaia.pages}" />
 		<mkdir dir="${lib}" />
 		<mkdir dir="${bin}" />
+		<mkdir dir="${ide}" />
 		<mkdir dir="${bin}/js" />
 		<mkdir dir="${bin}/xml" />
 
@@ -62,18 +65,6 @@
 
 		<copy todir="${lib}" overwrite="false" encoding="UTF-8">
 			<fileset dir="${templates}/lib" />
-		</copy>
-
-		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false" encoding="UTF-8">
-			<filterchain>
-				<replacetokens>
-					<token key="width" value="${width}" />
-					<token key="height" value="${height}" />
-					<token key="framerate" value="${framerate}" />
-					<token key="bgcolor" value="${bgcolor}" />
-					<token key="PACKAGENAME" value="${pages.package}" />
-				</replacetokens>
-			</filterchain>
 		</copy>
 
 		<copy file="${templates}/Scaffold.as" tofile="${src}/${pages.package}/Scaffold.as" overwrite="false" encoding="UTF-8">
@@ -106,6 +97,8 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
+		
+		<copy file="${templates}/gitignore" tofile=".gitignore" overwrite="false" encoding="UTF-8" />
 	</target>
 
 	<target name="create-main">
@@ -120,6 +113,24 @@
 			</filterchain>
 		</copy>
 		<copy file="${templates}/MainContext.as" tofile="${src}/MainContext.as" overwrite="false" encoding="UTF-8" />
+		
+		<create-xfl name="main" document="Main" />
+	</target>
+	
+	<target name="create-preload">
+		<copy file="${templates}/Preloader.as" tofile="${src}/${pages.package}/Preloader.as" overwrite="false" encoding="UTF-8">
+			<filterchain>
+				<replacetokens>
+					<token key="width" value="${width}" />
+					<token key="height" value="${height}" />
+					<token key="framerate" value="${framerate}" />
+					<token key="bgcolor" value="${bgcolor}" />
+					<token key="PACKAGENAME" value="${pages.package}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		
+		<create-xfl name="preload" document="${pages.package}.Preloader" />
 	</target>
 
 	<target name="create-pages">
@@ -153,6 +164,7 @@
 											</replacetokens>
 										</filterchain>
 									</copy>
+									<create-xfl name="@{class}" document="${pages.package}.${fuppercase}Page" />
 								</then>
 								<else>
 									<copy file="${templates}/Page.as" tofile="${gaia.pages}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
@@ -168,6 +180,7 @@
 											</replacetokens>
 										</filterchain>
 									</copy>
+									<create-xfl name="@{class}" document="${pages.package}.@{package}.${fuppercase}Page" />
 								</else>
 							</if>
 						</then>
@@ -390,6 +403,41 @@
 			</copy>
 		</sequential>
 	</macrodef>
+	
+	<macrodef name="create-xfl">
+		<attribute name="name" default="" />
+		<attribute name="document" default="" />
+		<sequential>
+			<echo message="create-xfl: @{name}.xfl | @{document}" />
+			<var name="ver" unset="true" />
+			<short-version property="ver" input="${player}" />
+			<copy todir="${ide}/@{name}" overwrite="false" encoding="UTF-8">
+				<fileset dir="${templates}/ide/template" />
+			</copy>
+			<copy file="${templates}/ide/template.xfl" tofile="${ide}/@{name}/@{name}.xfl" overwrite="false" encoding="UTF-8" />
+			<copy file="${templates}/ide/DOMDocument.xml" tofile="${ide}/@{name}/DOMDocument.xml" overwrite="false" encoding="UTF-8">
+				<filterchain>
+					<replacetokens>
+						<token key="width" value="${width}" />
+						<token key="height" value="${height}" />
+						<token key="framerate" value="${framerate}" />
+						<token key="bgcolor" value="${bgcolor}" />
+					</replacetokens>
+				</filterchain>
+			</copy>
+			<copy file="${templates}/ide/PublishSettings.xml" tofile="${ide}/@{name}/PublishSettings.xml" overwrite="false" encoding="UTF-8">
+				<filterchain>
+					<replacetokens>
+						<token key="name" value="@{name}" />
+						<token key="document" value="@{document}" />
+						<token key="version" value="${ver}" />
+						<token key="width" value="${width}" />
+						<token key="height" value="${height}" />
+					</replacetokens>
+				</filterchain>
+			</copy>
+		</sequential>
+	</macrodef>
 
 	<macrodef name="create-sitemap">
 		<attribute name="sitemap" default="" />
@@ -601,6 +649,7 @@
 			</xmltask>
 		</sequential>
 	</macrodef>
+	
 
 	<target name="create-build-info">
 		<tstamp>

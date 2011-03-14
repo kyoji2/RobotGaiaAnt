@@ -78,5 +78,17 @@
             value = input.substring(1);
             project.setNewProperty(name, value);
         ]]>
-    </scriptdef>  		
+    </scriptdef>  	
+    
+    <scriptdef name="short-version" language="javascript">
+        <attribute name="input"/>
+        <attribute name="property"/>
+        <![CDATA[
+            name  = attributes.get("property");
+            input = attributes.get("input");
+            index = input.indexOf(".");
+            value = input.substring(0, index);
+            project.setNewProperty(name, value);
+        ]]>
+    </scriptdef> 	
 </project>
