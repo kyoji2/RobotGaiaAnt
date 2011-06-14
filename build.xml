@@ -7,7 +7,7 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.5" />
+	<property name="version" value="0.6.7" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
@@ -28,6 +28,12 @@
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${build}/lib/ant-contrib-1.0b3.jar" />
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	<taskdef name="xmltask" classpath="${build}/lib/xmltask-v1.15.1.jar" classname="com.oopsconsultancy.xmltask.ant.XmlTask" />
+	
+	<property name="pages.full.package" value="${project.package}.${pages.package}" />
+	
+	<replace-dot property="project.src" input="${src}/${project.package}" />
+	
+	<property name="pages.src" value="${project.src}/${pages.package}" />
 
 
 	<target name="main" depends="scaffolding, seo-scaffolding, compile-all, create-build-info">
@@ -51,13 +57,6 @@
 
 	<!-- Scaffolding -->
 	<target name="create-base">
-		<property name="pages.full.package" value="${project.package}.${pages.package}" />
-				
-		<var name="project.src" unset="true" />
-		<replace-dot property="project.src" input="${src}/${project.package}" />
-		
-		<property name="pages.src" value="${project.src}/${pages.package}" />
-		
 		<mkdir dir="${pages.src}" />
 		<mkdir dir="${lib}" />
 		<mkdir dir="${bin}" />

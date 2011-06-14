@@ -5,6 +5,7 @@
 	<title>@title@</title>
 	<script type="text/javascript" src="js/swfobject.js"></script>
 	<script type="text/javascript" src="js/swfaddress.js"></script>
+	<!--<script type="text/javascript" src="js/swffit.js"></script>-->
 	<script type="text/javascript">
 		var params = {
 			quality: "high",
@@ -23,6 +24,7 @@
 			name: "flashcontent"
 		};
 		swfobject.embedSWF("main.swf", "flashcontent", "100%", "100%", "@player@", "expressInstall.swf", flashvars, params, attributes);
+		<!--swffit.fit("flashcontent", minWid, minHei, maxWid, maxHei, hCenter, vCenter);-->
 	</script>
 	<style type="text/css">
 		/*hide from ie on mac\*/
