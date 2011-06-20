@@ -79,7 +79,9 @@ v0.1.0:	First version
 
 - LINK:
 
-Gaia Flash Framework	:	http://www.gaiaflashframework.com
-Robotlegs				:	http://www.robotlegs.org
-Signals					:	http://github.com/robertpenner/as3-signals
-Signals extensions		:	http://github.com/robertpenner/signals-extensions-CommandSignal
+Gaia Flash Framework				:	http://www.gaiaflashframework.com
+Robotlegs							:	http://www.robotlegs.org
+Signals								:	http://github.com/robertpenner/as3-signals
+Signals extension					:	http://github.com/robertpenner/signals-extensions-CommandSignal
+Modular extension					:	https://github.com/joelhooks/robotlegs-utilities-Modular
+ViewInterfaceMediatorMap extension	:	http://github.com/piercer/robotlegs-extensions-ViewInterfaceMediatorMap
