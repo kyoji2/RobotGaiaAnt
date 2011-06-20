@@ -7,15 +7,20 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.6.7" />
+	<property name="version" value="0.7.0" />
+	
+	<!-- If you are using FDT, set this value to true. -->
+	<!-- To assure that FDT's tasks work, the task has to run in the same JRE (Java Runtime Environment) as Eclipse. see FDT's help. -->
+	<property name="fdt" value="false" />
 
 	<property name="build" value="build" />
 	<property name="buildInfo" value="build.txt" />
 
 	<property name="src" location="src" />
-	<property name="lib" location="lib" />
+	<property name="lib" location="libs" />
 	<property name="bin" location="bin" />
 	<property name="ide" location="ide" />
+	<property name="settings" location=".settings" />
 
 	<property file="${build}/flex.properties" />
 	<property file="${build}/gaia.properties" />
@@ -36,24 +41,22 @@
 	<property name="pages.src" value="${project.src}/${pages.package}" />
 
 
-	<target name="main" depends="scaffolding, seo-scaffolding, compile-all, create-build-info">
+	<target name="main" depends="scaffolding, seo-scaffolding, release">
 		<echo message="main" />
 	</target>
 
 	<target name="clean">
-		<delete dir="${pages.src}" />
-		<delete dir="${src}/models" />
-		<delete dir="${src}/views" />
-		<delete dir="${src}/controllers" />
-		<delete dir="${src}/signals" />
-		<delete dir="${src}/base" />
-		<delete file="${src}/Main.as" />
-		<delete file="${src}/MainContext.as" />
+		<delete dir="${src}" />
+		<delete dir="${ide}" />
+		<mkdir dir="${src}" />
+		<mkdir dir="${ide}" />
 	</target>
 
 	<target name="scaffolding" description="scaffolding" depends="create-base, create-main, create-preload, create-pages, create-static-page" />
 	<target name="seo-scaffolding" description="seo-scaffolding" depends="seo-html" />
 	<target name="compile-all" description="compile-all" depends="compile-pages, compile-preloader, compile-main" />
+	<target name="debug-all" description="debug-all" depends="debug-pages, debug-preloader, debug-main" />
+	<target name="release" description="release" depends="compile-all, create-build-info" />
 
 	<!-- Scaffolding -->
 	<target name="create-base">
@@ -129,6 +132,7 @@
 		</copy>
 		
 		<create-xfl name="main" document="Main" />
+		<create-launch name="Main" document="src/Main.as" swf="bin/main.swf" />
 	</target>
 	
 	<target name="create-preload">
@@ -145,6 +149,10 @@
 		</copy>
 		
 		<create-xfl name="preload" document="${pages.full.package}.Preloader" />
+		
+		<var name="relative.pages.src" unset="true" />
+		<replace-dot property="relative.pages.src" input="src/${pages.full.package}" />
+		<create-launch name="Preload" document="${relative.pages.src}/Preloader.as" swf="bin/preload.swf" />
 	</target>
 
 	<target name="create-pages">
@@ -162,6 +170,8 @@
 						<then>
 							<var name="fuppercase" unset="true" />
 							<first-uppercase property="fuppercase" input="@{class}" />
+							<var name="relative.pages.src" unset="true" />
+							<replace-dot property="relative.pages.src" input="src/${pages.full.package}" />
 							<if>
 								<equals arg1="@{package}" arg2="" />
 								<then>
@@ -179,6 +189,7 @@
 										</filterchain>
 									</copy>
 									<create-xfl name="@{class}" document="${pages.full.package}.${fuppercase}Page" />
+									<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
 								</then>
 								<else>
 									<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
@@ -195,6 +206,7 @@
 										</filterchain>
 									</copy>
 									<create-xfl name="@{class}" document="${pages.full.package}.@{package}.${fuppercase}Page" />
+									<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
 								</else>
 							</if>
 						</then>
@@ -228,6 +240,8 @@
 		<echo message="xml-remove-bytes" />
 		<remove-bytes-site-xml />
 	</target>
+	
+	
 
 	<macrodef name="update-bytes-page">
 		<attribute name="input" default="home" />
@@ -452,6 +466,31 @@
 			</copy>
 		</sequential>
 	</macrodef>
+	
+	<macrodef name="create-launch">
+		<attribute name="name" default="" />
+		<attribute name="document" default="" />
+		<attribute name="swf" default="" />
+		<sequential>
+			<if>
+				<equals arg1="${fdt}" arg2="true" />
+				<then>
+					<echo message="create-launch: @{name}" />
+					<copy file="${templates}/Page.launch" tofile="${settings}/launch/${appname} - @{name}.launch" overwrite="false" encoding="UTF-8">
+						<filterchain>
+							<replacetokens>
+								<token key="appname" value="${appname}" />
+								<token key="width" value="${width}" />
+								<token key="height" value="${height}" />
+								<token key="document" value="@{document}" />
+								<token key="swf" value="@{swf}" />
+							</replacetokens>
+						</filterchain>
+					</copy>
+				</then>
+			</if>
+		</sequential>
+	</macrodef>
 
 	<macrodef name="create-sitemap">
 		<attribute name="sitemap" default="" />
@@ -583,10 +622,65 @@
 			</call>
 		</xmltask>
 	</target>
+	
+	<target name="debug-pages" description="debug-pages">
+			<echo message="debug-pages" />
+			<xmltask source="${sitexml}">
+				<call path="//page">
+					<param name="id" path="@id" default="NO ID" />
+					<param name="dest" path="@src" default="NO ID" />
+					<param name="pack" path="@package" default="" />
+					<actions>
+						<var name="is_external" unset="true" />
+						<var name="existPageClass" unset="true" />
+						<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
+						<if>
+							<equals arg1="${is_external}" arg2="true" />
+							<then>
+								<var name="fuppercase" unset="true" />
+								<first-uppercase property="fuppercase" input="@{id}" />
+								<if>
+									<equals arg1="@{package}" arg2="" />
+									<then>
+										<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
+										<if>
+											<equals arg1="${existPageClass}" arg2="true" />
+											<then>
+												<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
+											</then>
+											<else>
+												<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
+											</else>
+										</if>
+									</then>
+									<else>
+										<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
+										<if>
+											<equals arg1="${existPageClass}" arg2="true" />
+											<then>
+												<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
+											</then>
+											<else>
+												<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
+											</else>
+										</if>
+									</else>
+								</if>
+							</then>
+						</if>
+					</actions>
+				</call>
+			</xmltask>
+		</target>
 
 	<target name="compile-preloader" description="compile-preloader">
 		<echo message="compile-preloader" />
 		<compile source="${pages.src}/Preloader.as" target="${bin}/preload.swf" debug="false" />
+	</target>
+	
+	<target name="debug-preloader" description="debug-preloader">
+		<echo message="debug-preloader" />
+		<compile source="${pages.src}/Preloader.as" target="${bin}/preload.swf" debug="true" />
 	</target>
 
 	<target name="compile-main" description="compile-main">
@@ -598,48 +692,60 @@
 	    </exec>
 	    -->
 	</target>
+	
+	<target name="debug-main" description="debug-main">
+		<echo message="debug-main" />
+		<compile source="${src}/Main.as" target="${bin}/main.swf" debug="true" />
+	</target>
 
 	<macrodef name="compile">
 		<attribute name="source" />
 		<attribute name="target" default="bin" />
 		<attribute name="debug" default="false" />
 		<sequential>
-			<mxmlc file="@{source}" output="@{target}" debug="@{debug}" target-player="${player}" optimize="true">
-
-
-				<compiler.library-path dir="${lib}">
-					<include name="**/*.swc" />
-					<include name="${project.lib.linked0}" />
-					<include name="${project.lib.linked1}" />
-					<include name="${project.lib.linked2}" />
-					<exclude name="${project.lib.exclude0}" />
-					<exclude name="${project.lib.exclude1}" />
-					<exclude name="${project.lib.exclude2}" />
-				</compiler.library-path>
-
-
-				<!--
-    	    	<compiler.external-library-path dir="${lib}">
-    	    		<include name="**/*.swc" />
-    	    		<include name="${project.lib.linked0}" />
-    	    		<include name="${project.lib.linked1}" />
-    	    		<include name="${project.lib.linked2}" />
-					<exclude name="${project.lib.exclude0}" />
-					<exclude name="${project.lib.exclude1}" />
-					<exclude name="${project.lib.exclude2}" />
-				</compiler.external-library-path>
-				-->
-
-				<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
-
-				<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
-
-				<compiler.keep-as3-metadata name="Inject" />
-				<compiler.keep-as3-metadata name="PostConstruct" />
-
-				<source-path path-element="${FLEX_HOME}/frameworks" />
-				<source-path path-element="${src}" />
-			</mxmlc>
+			<if>
+				<equals arg1="${fdt}" arg2="true" />
+				<then>
+					<fdt.loadProjectProperties projectname="${appname}" />
+					<fdt.launch.application projectname="${FDTProject}" mainclass="@{source}" target="@{target}" debug="@{debug}" />
+				</then>
+				<else>
+					<mxmlc file="@{source}" output="@{target}" debug="@{debug}" target-player="${player}" optimize="true">
+							
+					<compiler.library-path dir="${lib}">
+						<include name="**/*.swc" />
+						<include name="${project.lib.linked0}" />
+						<include name="${project.lib.linked1}" />
+						<include name="${project.lib.linked2}" />
+						<exclude name="${project.lib.exclude0}" />
+						<exclude name="${project.lib.exclude1}" />
+						<exclude name="${project.lib.exclude2}" />
+					</compiler.library-path>
+	
+					<!--
+	    	    	<compiler.external-library-path dir="${lib}">
+	    	    		<include name="**/*.swc" />
+	    	    		<include name="${project.lib.linked0}" />
+	    	    		<include name="${project.lib.linked1}" />
+	    	    		<include name="${project.lib.linked2}" />
+						<exclude name="${project.lib.exclude0}" />
+						<exclude name="${project.lib.exclude1}" />
+						<exclude name="${project.lib.exclude2}" />
+					</compiler.external-library-path>
+					-->
+	
+					<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml" />
+	
+					<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+	
+					<compiler.keep-as3-metadata name="Inject" />
+					<compiler.keep-as3-metadata name="PostConstruct" />
+	
+					<source-path path-element="${FLEX_HOME}/frameworks" />
+					<source-path path-element="${src}" />
+				</mxmlc>
+				</else>
+			</if>
 		</sequential>
 	</macrodef>
 

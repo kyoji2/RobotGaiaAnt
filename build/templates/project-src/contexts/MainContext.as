@@ -11,6 +11,8 @@
 	import @PACKAGENAME@.signals.AppSignalBus;
 
 	import org.robotlegs.base.ContextEvent;
+	import org.robotlegs.base.ViewInterfaceMediatorMap;
+	import org.robotlegs.core.IMediatorMap;
 	import org.robotlegs.mvcs.ModuleSignalContext;
 	import org.robotlegs.utilities.modular.core.IModule;
 
@@ -26,23 +28,28 @@
 
 		override public function startup() : void
 		{
-			// service
+			// signals
+			injector.mapSingleton(AppSignalBus);
 
+			// service
+			
 
 			// model
 			injector.mapSingletonOf(IAppModel, AppModel);
-
-			// signals
-			injector.mapSingleton(AppSignalBus);
 
 			// init commands
 			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, InitSignalMappingCommand, ContextEvent, true);
 			commandMap.mapEvent(ContextEvent.STARTUP_COMPLETE, StartupCommand, ContextEvent, true);
 
 			// init mediators
-			mediatorMap.mapView(IModule, ModulePageMediator, IModule);
+			mediatorMap.mapView(IModule, ModulePageMediator);
 
 			super.startup();
+		}
+
+		override protected function get mediatorMap() : IMediatorMap
+		{
+			return _mediatorMap ||= new ViewInterfaceMediatorMap(contextView, createChildInjector(), reflector);
 		}
 	}
 }

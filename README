@@ -23,13 +23,18 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.7.0: updated to work with robotlegs 1.4
+		add FDT ant support
+		scaffolding FDT's launch setting files
+		add debug targets
+		add release target
 v0.6.7: fix property issue in build.xml
 v0.6.6: add swffit (http://swffit.millermedeiros.com/)
 		update gaia to 3.2.6f
 		update greensock
 v0.6.5: update pagckage's structure
 v0.6.3: add create xfl file feature
-v0.6.2: update robotlegs to v1.1.4
+v0.6.2: update robotlegs to v1.4
 		update as3-signals to v0.8
 		update greensock
 		fix title in site.xml template
