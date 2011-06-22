@@ -112,7 +112,7 @@
         <rsl-url>textLayout_1.0.0.595.swz</rsl-url>
       </library-path-entry>
       <library-path-entry>
-        <swc-path>../lib</swc-path>
+        <swc-path>../libs</swc-path>
         <linkage>merge</linkage>
       </library-path-entry>
     </LibraryPath>
