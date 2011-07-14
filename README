@@ -23,6 +23,8 @@ Kevin Cao ( http://kevincao.com )
 
 - CHANGELOG:
 
+v0.7.1: update greensock
+		fixed: open an external page using context menu will be blocked
 v0.7.0: updated to work with robotlegs 1.4
 		add FDT ant support
 		scaffolding FDT's launch setting files

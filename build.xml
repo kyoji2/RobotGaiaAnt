@@ -7,7 +7,7 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.7.0" />
+	<property name="version" value="0.7.1" />
 	
 	<!-- If you are using FDT, set this value to true. -->
 	<!-- To assure that FDT's tasks work, the task has to run in the same JRE (Java Runtime Environment) as Eclipse. see FDT's help. -->
