@@ -7,7 +7,7 @@
 	<!-- System environment must contain FLEX_HOME variable that points to Flex SDK -->
 	<property name="FLEX_HOME" location="${env.FLEX_HOME}"/>
 
-	<property name="version" value="0.7.2" />
+	<property name="version" value="0.7.3" />
 	
 	<!-- If you are using FDT, set this value to true. -->
 	<!-- To assure that FDT's tasks work, the task has to run in the same JRE (Java Runtime Environment) as Eclipse. see FDT's help. -->
@@ -119,6 +119,7 @@
 	</target>
 
 	<target name="create-main">
+		<echo message="create-main" />
 		<copy file="${templates}/Main.as" tofile="${src}/Main.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
@@ -136,6 +137,7 @@
 	</target>
 	
 	<target name="create-preload">
+		<echo message="create-preload" />
 		<copy file="${templates}/Preloader.as" tofile="${pages.src}/Preloader.as" overwrite="false" encoding="UTF-8">
 			<filterchain>
 				<replacetokens>
@@ -162,54 +164,63 @@
 				<param name="package" path="@package" default="" />
 				<param name="class" path="@id" />
 				<param name="source" path="@src" />
+				<param name="skip" path="@skip" default="false" />
 				<actions>
-					<var name="is_external" unset="true" />
-					<get-page-type property="is_external" input="@{source}" domain="${base.url}" class="@{class}" package="@{package}" />
 					<if>
-						<equals arg1="${is_external}" arg2="true" />
+						<equals arg1="@{skip}" arg2="true" />
 						<then>
-							<var name="fuppercase" unset="true" />
-							<first-uppercase property="fuppercase" input="@{class}" />
-							<var name="relative.pages.src" unset="true" />
-							<replace-dot property="relative.pages.src" input="src/${pages.full.package}" />
-							<if>
-								<equals arg1="@{package}" arg2="" />
-								<then>
-									<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
-										<filterchain>
-											<replacetokens>
-												<token key="PACKAGENAME" value="${pages.full.package}" />
-												<token key="CLASSNAME" value="${fuppercase}Page" />
-												<token key="IMPORT" value="" />
-												<token key="width" value="${width}" />
-												<token key="height" value="${height}" />
-												<token key="framerate" value="${framerate}" />
-												<token key="bgcolor" value="${bgcolor}" />
-											</replacetokens>
-										</filterchain>
-									</copy>
-									<create-xfl name="@{class}" document="${pages.full.package}.${fuppercase}Page" />
-									<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
-								</then>
-								<else>
-									<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
-										<filterchain>
-											<replacetokens>
-												<token key="PACKAGENAME" value="${pages.full.package}.@{package}" />
-												<token key="CLASSNAME" value="${fuppercase}Page" />
-												<token key="IMPORT" value="import ${pages.full.package}.*;" />
-												<token key="width" value="${width}" />
-												<token key="height" value="${height}" />
-												<token key="framerate" value="${framerate}" />
-												<token key="bgcolor" value="${bgcolor}" />
-											</replacetokens>
-										</filterchain>
-									</copy>
-									<create-xfl name="@{class}" document="${pages.full.package}.@{package}.${fuppercase}Page" />
-									<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
-								</else>
-							</if>
+							<echo message="skip: @{class}" />
 						</then>
+						<else>
+							<var name="is_external" unset="true" />
+							<get-page-type property="is_external" input="@{source}" domain="${base.url}" class="@{class}" package="@{package}" />
+							<if>
+								<equals arg1="${is_external}" arg2="true" />
+								<then>
+									<var name="fuppercase" unset="true" />
+									<first-uppercase property="fuppercase" input="@{class}" />
+									<var name="relative.pages.src" unset="true" />
+									<replace-dot property="relative.pages.src" input="src/${pages.full.package}" />
+									<if>
+										<equals arg1="@{package}" arg2="" />
+										<then>
+											<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
+												<filterchain>
+													<replacetokens>
+														<token key="PACKAGENAME" value="${pages.full.package}" />
+														<token key="CLASSNAME" value="${fuppercase}Page" />
+														<token key="IMPORT" value="" />
+														<token key="width" value="${width}" />
+														<token key="height" value="${height}" />
+														<token key="framerate" value="${framerate}" />
+														<token key="bgcolor" value="${bgcolor}" />
+													</replacetokens>
+												</filterchain>
+											</copy>
+											<create-xfl name="@{class}" document="${pages.full.package}.${fuppercase}Page" />
+											<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
+										</then>
+										<else>
+											<copy file="${templates}/Page.as" tofile="${pages.src}/@{package}/${fuppercase}Page.as" overwrite="false" encoding="UTF-8">
+												<filterchain>
+													<replacetokens>
+														<token key="PACKAGENAME" value="${pages.full.package}.@{package}" />
+														<token key="CLASSNAME" value="${fuppercase}Page" />
+														<token key="IMPORT" value="import ${pages.full.package}.*;" />
+														<token key="width" value="${width}" />
+														<token key="height" value="${height}" />
+														<token key="framerate" value="${framerate}" />
+														<token key="bgcolor" value="${bgcolor}" />
+													</replacetokens>
+												</filterchain>
+											</copy>
+											<create-xfl name="@{class}" document="${pages.full.package}.@{package}.${fuppercase}Page" />
+											<create-launch name="${fuppercase}Page" document="${relative.pages.src}/${fuppercase}Page.as" swf="bin/@{source}" />
+										</else>
+									</if>
+								</then>
+							</if>
+						</else>
 					</if>
 				</actions>
 			</call>
@@ -436,6 +447,7 @@
 		<attribute name="name" default="" />
 		<attribute name="document" default="" />
 		<sequential>
+			<!--
 			<echo message="create-xfl: @{name}.xfl | @{document}" />
 			<var name="ver" unset="true" />
 			<short-version property="ver" input="${player}" />
@@ -464,6 +476,7 @@
 					</replacetokens>
 				</filterchain>
 			</copy>
+			-->
 		</sequential>
 	</macrodef>
 	
@@ -580,43 +593,52 @@
 				<param name="id" path="@id" default="NO ID" />
 				<param name="dest" path="@src" default="NO ID" />
 				<param name="pack" path="@package" default="" />
+				<param name="skip" path="@skip" default="false" />
 				<actions>
-					<var name="is_external" unset="true" />
-					<var name="existPageClass" unset="true" />
-					<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
 					<if>
-						<equals arg1="${is_external}" arg2="true" />
+						<equals arg1="@{skip}" arg2="true" />
 						<then>
-							<var name="fuppercase" unset="true" />
-							<first-uppercase property="fuppercase" input="@{id}" />
+							<echo message="skip: @{id}" />
+						</then>
+						<else>
+							<var name="is_external" unset="true" />
+							<var name="existPageClass" unset="true" />
+							<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
 							<if>
-								<equals arg1="@{package}" arg2="" />
+								<equals arg1="${is_external}" arg2="true" />
 								<then>
-									<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
+									<var name="fuppercase" unset="true" />
+									<first-uppercase property="fuppercase" input="@{id}" />
 									<if>
-										<equals arg1="${existPageClass}" arg2="true" />
+										<equals arg1="@{package}" arg2="" />
 										<then>
-											<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+											<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
+											<if>
+												<equals arg1="${existPageClass}" arg2="true" />
+												<then>
+													<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+												</then>
+												<else>
+													<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
+												</else>
+											</if>
 										</then>
 										<else>
-											<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
+											<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
+											<if>
+												<equals arg1="${existPageClass}" arg2="true" />
+												<then>
+													<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
+												</then>
+												<else>
+													<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
+												</else>
+											</if>
 										</else>
 									</if>
 								</then>
-								<else>
-									<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
-									<if>
-										<equals arg1="${existPageClass}" arg2="true" />
-										<then>
-											<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="false" />
-										</then>
-										<else>
-											<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
-										</else>
-									</if>
-								</else>
 							</if>
-						</then>
+						</else>
 					</if>
 				</actions>
 			</call>
@@ -630,43 +652,52 @@
 					<param name="id" path="@id" default="NO ID" />
 					<param name="dest" path="@src" default="NO ID" />
 					<param name="pack" path="@package" default="" />
+					<param name="skip" path="@skip" default="false" />
 					<actions>
-						<var name="is_external" unset="true" />
-						<var name="existPageClass" unset="true" />
-						<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
 						<if>
-							<equals arg1="${is_external}" arg2="true" />
+							<equals arg1="@{skip}" arg2="true" />
 							<then>
-								<var name="fuppercase" unset="true" />
-								<first-uppercase property="fuppercase" input="@{id}" />
+								<echo message="skip: @{id}" />
+							</then>
+							<else>
+								<var name="is_external" unset="true" />
+								<var name="existPageClass" unset="true" />
+								<get-page-type property="is_external" input="@{dest}" domain="${base.url}" class="@{id}" package="${package}" />
 								<if>
-									<equals arg1="@{package}" arg2="" />
+									<equals arg1="${is_external}" arg2="true" />
 									<then>
-										<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
+										<var name="fuppercase" unset="true" />
+										<first-uppercase property="fuppercase" input="@{id}" />
 										<if>
-											<equals arg1="${existPageClass}" arg2="true" />
+											<equals arg1="@{package}" arg2="" />
 											<then>
-												<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
+												<available file="${pages.src}/${fuppercase}Page.as" property="existPageClass" />
+												<if>
+													<equals arg1="${existPageClass}" arg2="true" />
+													<then>
+														<compile source="${pages.src}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
+													</then>
+													<else>
+														<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
+													</else>
+												</if>
 											</then>
 											<else>
-												<echo message="${pages.src}/${fuppercase}Page.as no exist, skipped." />
+												<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
+												<if>
+													<equals arg1="${existPageClass}" arg2="true" />
+													<then>
+														<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
+													</then>
+													<else>
+														<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
+													</else>
+												</if>
 											</else>
 										</if>
 									</then>
-									<else>
-										<available file="${pages.src}/@{pack}/${fuppercase}Page.as" property="existPageClass" />
-										<if>
-											<equals arg1="${existPageClass}" arg2="true" />
-											<then>
-												<compile source="${pages.src}/@{pack}/${fuppercase}Page.as" target="${bin}/@{dest}" debug="true" />
-											</then>
-											<else>
-												<echo message="${pages.src}/@{pack}/${fuppercase}Page.as no exist, skipped." />
-											</else>
-										</if>
-									</else>
 								</if>
-							</then>
+							</else>
 						</if>
 					</actions>
 				</call>
